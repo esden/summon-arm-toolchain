@@ -21,12 +21,14 @@ case "$(uname)" in
 	Linux)
 	echo "Found Linux OS."
 	GCCFLAGS=
+	GDBFLAGS=
 	;;
 	Darwin)
 	echo "Found Darwin OS."
 	GCCFLAGS="--with-gmp=${DARWIN_OPT_PATH} \
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
+        GDBFLAGS="--disable-werror"
 	;;
 	*)
 	echo "Found Unknown OS. Aborting!"
@@ -246,7 +248,8 @@ if [ ! -e .${GDB}.build ]; then
     ../${GDB}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
                       --enable-interwork \
-                      --enable-multilib || exit
+                      --enable-multilib \
+		      ${GDBFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GDB}"
     echo "******************************************************************"
