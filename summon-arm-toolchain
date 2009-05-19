@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 # Written by Uwe Hermann <uwe@hermann-uwe.de>, released as public domain.
 # Modified by Piot Esden-Tempski <piotr@esden.net>, released as public domain.
 
 TARGET=arm-none-eabi			 # Or: TARGET=arm-none-eabi
-PREFIX=${HOME}/arm-none-eabi # Install location of your final toolchain
-PARALLEL="-j 5"			 # Or: PARALLEL=""
+PREFIX=${HOME}/arm-none-eabi             # Install location of your final toolchain
+PARALLEL=""			         # Or: PARALLEL="-j 5" for 4 CPU's
+DARWIN_OPT_PATH=/opt/local               # Path in which MacPorts or Fink is installed
 
 BINUTILS=binutils-2.19.1
 GCC=gcc-4.4.0
@@ -15,6 +16,23 @@ LIBSTM32=v3.0.0-1
 LIBSTM32USB=v3.0.1-1
 
 export PATH="${PREFIX}/bin:${PATH}"
+
+case "$(uname)" in
+	Linux)
+	echo "Found Linux OS."
+	GCCFLAGS=
+	;;
+	Darwin)
+	echo "Found Darwin OS."
+	GCCFLAGS="--with-gmp=${DARWIN_OPT_PATH} \
+	          --with-mpfr=${DARWIN_OPT_PATH} \
+		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
+	;;
+	*)
+	echo "Found Unknown OS. Aborting!"
+	exit 1
+	;;
+esac
 
 if [ ! -e sources ]; then
     mkdir sources
@@ -128,7 +146,8 @@ if [ ! -e .${GCC}-boot.build ]; then
                       --disable-shared \
                       --with-gnu-as \
                       --with-gnu-ld \
-                      --disable-nls || exit
+                      --disable-nls \
+		      ${GCCFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GCC}-boot"
     echo "******************************************************************"
@@ -197,7 +216,8 @@ if [ ! -e .${GCC}.build ]; then
                       --disable-shared \
                       --with-gnu-as \
                       --with-gnu-ld \
-		      --disable-nls || exit
+		      --disable-nls \
+		      ${GCCFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GCC}"
     echo "******************************************************************"

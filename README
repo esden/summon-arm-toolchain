@@ -1,10 +1,24 @@
+REMEMBER!
+---------
+THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE. NOT FOR USE
+WITH GLIBC OR THE LINUX KERNEL. DO NOT EVEN BOTHER TO ASK FOR THAT!
+
 To compile the arm toolchain for barebone arm devices:
+------------------------------------------------------
 * Edit the shellscript header to match your environment
 * Run it
 * Profit
 
-Currently tested and know to work target platforms:
+Currently tested and known to work target platforms:
+----------------------------------------------------
 * STM32F10x (Olimex STM32-H103 eval board)
 
-THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE, NOT FOR USE
-WITH GLIBC OR THE LINUX KERNEL SO DO NOT EVEN BOTHER TO ASK FOR THAT!
+Currently tested and known to work host platforms:
+--------------------------------------------------
+* Linux 64bit (Debian Unstable)
+* Mac OS X Leopard with MacPorts
+
+Notes for Mac OS X users:
+-------------------------
+You need to install gmp, mpfr and libiconv packages using MacPorts, DarwinPorts
+or fink. GCC-4.4.0 requires them.
