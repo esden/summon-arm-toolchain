@@ -1,0 +1,310 @@
+#!/bin/sh
+# Written by Uwe Hermann <uwe@hermann-uwe.de>, released as public domain.
+# Modified by Piot Esden-Tempski <piotr@esden.net>, released as public domain.
+
+TARGET=arm-none-eabi			 # Or: TARGET=arm-none-eabi
+PREFIX=${HOME}/arm-none-eabi # Install location of your final toolchain
+PARALLEL="-j 5"			 # Or: PARALLEL=""
+
+BINUTILS=binutils-2.19.1
+GCC=gcc-4.4.0
+NEWLIB=newlib-1.17.0
+GDB=gdb-6.8
+LIBCMSIS=v1.10-2
+LIBSTM32=v3.0.0-1
+LIBSTM32USB=v3.0.1-1
+
+export PATH="${PREFIX}/bin:${PATH}"
+
+if [ ! -e sources ]; then
+    mkdir sources
+fi
+
+cd sources
+if [ ! -e ${BINUTILS}.tar.bz2 ]; then
+	echo "Downloading binutils sources..."
+	wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
+fi
+
+if [ ! -e ${GCC}.tar.bz2 ]; then
+	echo "Downloading gcc sources..."
+	wget -c ftp://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
+fi
+
+if [ ! -e ${NEWLIB}.tar.gz ]; then
+	echo "Downloading newlib sources..."
+	wget -c ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
+fi
+
+if [ ! -e ${GDB}.tar.bz2 ]; then
+	echo "Downloading gdb sources..."
+	wget -c ftp://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+fi
+
+if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
+	echo "Cloning libcmsis sources..."
+	git clone git://git.open-bldc.org/libcmsis.git
+        cd libcmsis
+        git archive --format=tar --prefix=libcmsis-${LIBCMSIS}/ ${LIBCMSIS} | \
+            bzip2 --stdout > ../libcmsis-${LIBCMSIS}.tar.bz2
+        cd ..
+        rm -rf libcmsis
+fi
+
+if [ ! -e libstm32-${LIBSTM32}.tar.bz2 ]; then
+	echo "Cloning libstm32 sources..."
+	git clone git://git.open-bldc.org/libstm32.git
+        cd libstm32
+        git archive --format=tar --prefix=libstm32-${LIBSTM32}/ ${LIBSTM32} | \
+            bzip2 --stdout > ../libstm32-${LIBSTM32}.tar.bz2
+        cd ..
+        rm -rf libstm32
+fi
+
+if [ ! -e libstm32usb-${LIBSTM32USB}.tar.bz2 ]; then
+	echo "Cloning libstm32usb sources..."
+	git clone git://git.open-bldc.org/libstm32usb.git
+        cd libstm32usb
+        git archive --format=tar --prefix=libstm32usb-${LIBSTM32USB}/ ${LIBSTM32USB} | \
+            bzip2 --stdout > ../libstm32usb-${LIBSTM32USB}.tar.bz2
+        cd ..
+        rm -rf libstm32usb
+fi
+
+cd ..
+
+if [ ! -e build ]; then
+    mkdir build
+fi
+
+if [ ! -e .${BINUTILS}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking ${BINUTILS}"
+    echo "******************************************************************"
+    tar xfvj sources/${BINUTILS}.tar.bz2
+    cd build
+    echo "******************************************************************"
+    echo "* Configuring ${BINUTILS}"
+    echo "******************************************************************"
+    ../${BINUTILS}/configure --target=${TARGET} \
+                           --prefix=${PREFIX} \
+                           --enable-interwork \
+                           --enable-multilib \
+                           --with-gnu-as \
+                           --with-gnu-ld \
+                           --disable-nls || exit
+    echo "******************************************************************"
+    echo "* Building ${BINUTILS}"
+    echo "******************************************************************"
+    make ${PARALLEL} || exit
+    echo "******************************************************************"
+    echo "* Installing ${BINUTILS}"
+    echo "******************************************************************"
+    make install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up ${BINUTILS}"
+    echo "******************************************************************"
+    touch .${BINUTILS}.build
+    rm -rf build/* ${BINUTILS}
+fi
+
+if [ ! -e .${GCC}-boot.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking ${GCC}-boot"
+    echo "******************************************************************"
+    tar xfvj sources/${GCC}.tar.bz2
+    cd build
+    echo "******************************************************************"
+    echo "* Configuring ${GCC}-boot"
+    echo "******************************************************************"
+    ../${GCC}/configure --target=${TARGET} \
+                      --prefix=${PREFIX} \
+                      --enable-interwork \
+                      --enable-multilib \
+                      --enable-languages="c" \
+                      --with-newlib \
+                      --without-headers \
+                      --disable-shared \
+                      --with-gnu-as \
+                      --with-gnu-ld \
+                      --disable-nls || exit
+    echo "******************************************************************"
+    echo "* Building ${GCC}-boot"
+    echo "******************************************************************"
+    make ${PARALLEL} all-gcc || exit
+    echo "******************************************************************"
+    echo "* Installing ${GCC}-boot"
+    echo "******************************************************************"
+    make install-gcc || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up ${GCC}-boot"
+    echo "******************************************************************"
+    touch .${GCC}-boot.build
+    rm -rf build/* ${GCC}
+fi
+
+if [ ! -e .${NEWLIB}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking ${NEWLIB}"
+    echo "******************************************************************"
+    tar xfvz sources/${NEWLIB}.tar.gz
+    cd build
+    echo "******************************************************************"
+    echo "* Configuring ${NEWLIB}"
+    echo "******************************************************************"
+    ../${NEWLIB}/configure --target=${TARGET} \
+                         --prefix=${PREFIX} \
+                         --enable-interwork \
+                         --enable-multilib \
+                         --with-gnu-as \
+                         --with-gnu-ld \
+                         --disable-nls \
+                         --disable-newlib-supplied-syscalls || exit
+    echo "******************************************************************"
+    echo "* Building ${NEWLIB}"
+    echo "******************************************************************"
+    make ${PARALLEL} || exit
+    echo "******************************************************************"
+    echo "* Installing ${NEWLIB}"
+    echo "******************************************************************"
+    make install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up ${NEWLIB}"
+    echo "******************************************************************"
+    touch .${NEWLIB}.build
+    rm -rf build/* ${NEWLIB}
+fi
+
+# Yes, you need to build gcc again!
+if [ ! -e .${GCC}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking ${GCC}"
+    echo "******************************************************************"
+    tar xfvj sources/${GCC}.tar.bz2
+    cd build
+    echo "******************************************************************"
+    echo "* Configuring ${GCC}"
+    echo "******************************************************************"
+    ../${GCC}/configure --target=${TARGET} \
+                      --prefix=${PREFIX} \
+                      --enable-interwork \
+                      --enable-multilib \
+                      --enable-languages="c,c++" \
+                      --with-newlib \
+                      --disable-shared \
+                      --with-gnu-as \
+                      --with-gnu-ld \
+		      --disable-nls || exit
+    echo "******************************************************************"
+    echo "* Building ${GCC}"
+    echo "******************************************************************"
+    make ${PARALLEL} || exit
+    echo "******************************************************************"
+    echo "* Installing ${GCC}"
+    echo "******************************************************************"
+    make install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up ${GCC}"
+    echo "******************************************************************"
+    touch .${GCC}.build
+    rm -rf build/* ${GCC}
+fi
+
+if [ ! -e .${GDB}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking ${GDB}"
+    echo "******************************************************************"
+    tar xfvj sources/${GDB}.tar.bz2
+    cd build
+    echo "******************************************************************"
+    echo "* Configuring ${GDB}"
+    echo "******************************************************************"
+    ../${GDB}/configure --target=${TARGET} \
+                      --prefix=${PREFIX} \
+                      --enable-interwork \
+                      --enable-multilib || exit
+    echo "******************************************************************"
+    echo "* Building ${GDB}"
+    echo "******************************************************************"
+    make ${PARALLEL} || exit
+    echo "******************************************************************"
+    echo "* Installing ${GDB}"
+    echo "******************************************************************"
+    make install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up ${GDB}"
+    echo "******************************************************************"
+    touch .${GDB}.build
+    rm -rf build/* ${GDB}
+fi
+
+if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking libcmsis-${LIBCMSIS}"
+    echo "******************************************************************"
+    tar xfvj sources/libcmsis-${LIBCMSIS}.tar.bz2
+    cd libcmsis-${LIBCMSIS}
+    echo "******************************************************************"
+    echo "* Building libcmsis-${LIBCMSIS}"
+    echo "******************************************************************"
+    make arch_prefix=${TARGET} prefix=${PREFIX} || exit
+    echo "******************************************************************"
+    echo "* Installing libcmsis-${LIBCMSIS}"
+    echo "******************************************************************"
+    make arch_prefix=${TARGET} prefix=${PREFIX} install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up libcmsis-${LIBCMSIS}"
+    echo "******************************************************************"
+    touch .libcmsis-${LIBCMSIS}.build
+    rm -rf libcmsis-${LIBCMSIS}
+fi
+
+if [ ! -e .libstm32-${LIBSTM32}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking libstm32-${LIBSTM32}"
+    echo "******************************************************************"
+    tar xfvj sources/libstm32-${LIBSTM32}.tar.bz2
+    cd libstm32-${LIBSTM32}
+    echo "******************************************************************"
+    echo "* Building libstm32-${LIBSTM32}"
+    echo "******************************************************************"
+    make arch_prefix=${TARGET} prefix=${PREFIX} || exit
+    echo "******************************************************************"
+    echo "* Installing libstm32-${LIBSTM32}"
+    echo "******************************************************************"
+    make arch_prefix=${TARGET} prefix=${PREFIX} install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up libstm32-${LIBSTM32}"
+    echo "******************************************************************"
+    touch .libstm32-${LIBSTM32}.build
+    rm -rf libstm32-${LIBSTM32}
+fi
+
+if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
+    echo "******************************************************************"
+    echo "* Unpacking libstm32usb-${LIBSTM32USB}"
+    echo "******************************************************************"
+    tar xfvj sources/libstm32usb-${LIBSTM32USB}.tar.bz2
+    cd libstm32usb-${LIBSTM32USB}
+    echo "******************************************************************"
+    echo "* Building libstm32usb-${LIBSTM32USB}"
+    echo "******************************************************************"
+    make arch_prefix=${TARGET} prefix=${PREFIX} || exit
+    echo "******************************************************************"
+    echo "* Installing libstm32usb-${LIBSTM32USB}"
+    echo "******************************************************************"
+    make arch_prefix=${TARGET} prefix=${PREFIX} install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up libstm32usb-${LIBSTM32USB}"
+    echo "******************************************************************"
+    touch .libstm32usb-${LIBSTM32USB}.build
+    rm -rf libstm32usb-${LIBSTM32USB}
+fi

@@ -1,0 +1,10 @@
+To compile the arm toolchain for barebone arm devices:
+* Edit the shellscript header to match your environment
+* Run it
+* Profit
+
+Currently tested and know to work target platforms:
+* STM32F10x (Olimex STM32-H103 eval board)
+
+THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE, NOT FOR USE
+WITH GLIBC OR THE LINUX KERNEL SO DO NOT EVEN BOTHER TO ASK FOR THAT!
