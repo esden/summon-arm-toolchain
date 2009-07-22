@@ -2,8 +2,8 @@
 # Written by Uwe Hermann <uwe@hermann-uwe.de>, released as public domain.
 # Modified by Piot Esden-Tempski <piotr@esden.net>, released as public domain.
 
-TARGET=arm-none-eabi			 # Or: TARGET=arm-none-eabi
-PREFIX=${HOME}/arm-none-eabi             # Install location of your final toolchain
+TARGET=arm-elf				 # Or: TARGET=arm-none-eabi
+PREFIX=${HOME}/arm-elf                   # Install location of your final toolchain
 PARALLEL=""			         # Or: PARALLEL="-j 5" for 4 CPU's
 DARWIN_OPT_PATH=/opt/local               # Path in which MacPorts or Fink is installed
 
@@ -14,6 +14,9 @@ GDB=gdb-6.8
 LIBCMSIS=v1.10-2
 LIBSTM32=v3.0.0-1
 LIBSTM32USB=v3.0.1-1
+LIBOPENSTM32=master
+LIBSTM32_EN=0
+LIBOPENSTM32_EN=0
 
 export PATH="${PREFIX}/bin:${PATH}"
 
@@ -61,6 +64,7 @@ if [ ! -e ${GDB}.tar.bz2 ]; then
 	wget -c ftp://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 fi
 
+if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
 	echo "Cloning libcmsis sources..."
 	git clone git://git.open-bldc.org/libcmsis.git
@@ -89,6 +93,19 @@ if [ ! -e libstm32usb-${LIBSTM32USB}.tar.bz2 ]; then
             bzip2 --stdout > ../libstm32usb-${LIBSTM32USB}.tar.bz2
         cd ..
         rm -rf libstm32usb
+fi
+fi
+
+if [ ${LIBOPENSTM32_EN} != 0 ]; then
+if [ ! -e libopenstm32-${LIBOPENSTM32}.tar.bz2 ]; then
+	echo "Cloning libopenstm32 sources..."
+	git clone git://libopenstm32.git.sourceforge.net/gitroot/libopenstm32
+        cd libopenstm32
+        git archive --format=tar --prefix=libopenstm32-${LIBOPENSTM32}/ ${LIBOPENSTM32} | \
+            bzip2 --stdout > ../libopenstm32-${LIBOPENSTM32}.tar.bz2
+        cd ..
+        rm -rf libopenstm32
+fi
 fi
 
 cd ..
@@ -266,6 +283,7 @@ if [ ! -e .${GDB}.build ]; then
     rm -rf build/* ${GDB}
 fi
 
+if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking libcmsis-${LIBCMSIS}"
@@ -330,4 +348,27 @@ if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
     echo "******************************************************************"
     touch .libstm32usb-${LIBSTM32USB}.build
     rm -rf libstm32usb-${LIBSTM32USB}
+fi
+fi
+
+if [ $LIBOPENSTM32_EN != 0 ]; then
+    echo "******************************************************************"
+    echo "* Unpacking libopenstm32-${LIBOPENSTM32}"
+    echo "******************************************************************"
+    tar xfvj sources/libopenstm32-${LIBOPENSTM32}.tar.bz2
+    cd libopenstm32-${LIBOPENSTM32}
+    echo "******************************************************************"
+    echo "* Building libopenstm32-${LIBOPENSTM32}"
+    echo "******************************************************************"
+    make PREFIX=${TARGET} DESTDIR=${PREFIX} || exit
+    echo "******************************************************************"
+    echo "* Installing libopenstm32-${LIBOPENSTM32}"
+    echo "******************************************************************"
+    make PREFIX=${TARGET} DESTDIR=${PREFIX} install || exit
+    cd ..
+    echo "******************************************************************"
+    echo "* Cleaning up libopenstm32-${LIBOPENSTM32}"
+    echo "******************************************************************"
+    touch .libopenstm32-${LIBOPENSTM32}.build
+    rm -rf libopenstm32-${LIBOPENSTM32}
 fi
