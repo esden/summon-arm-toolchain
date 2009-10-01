@@ -3,9 +3,9 @@ REMEMBER!
 THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE. NOT FOR USE
 WITH GLIBC OR THE LINUX KERNEL. DO NOT EVEN BOTHER TO ASK FOR THAT!
 
-To compile the arm toolchain for barebone arm devices:
+To compile the ARM toolchain for barebone ARM devices:
 ------------------------------------------------------
-* Edit the shellscript header to match your environment
+* Edit the shell script to match your environment
 * Run it
 * Profit
 
@@ -15,7 +15,7 @@ Currently tested and known to work target platforms:
 
 Currently tested and known to work host platforms:
 --------------------------------------------------
-* Linux 64bit (Debian Unstable)
+* Linux 64bit (Debian unstable)
 * Mac OS X Leopard with MacPorts
 
 Notes for Mac OS X users:

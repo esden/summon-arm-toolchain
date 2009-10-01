@@ -1,11 +1,11 @@
 #!/bin/bash
 # Written by Uwe Hermann <uwe@hermann-uwe.de>, released as public domain.
-# Modified by Piot Esden-Tempski <piotr@esden.net>, released as public domain.
+# Modified by Piotr Esden-Tempski <piotr@esden.net>, released as public domain.
 
-TARGET=arm-elf				 # Or: TARGET=arm-none-eabi
-PREFIX=${HOME}/arm-elf                   # Install location of your final toolchain
-PARALLEL=""			         # Or: PARALLEL="-j 5" for 4 CPU's
-DARWIN_OPT_PATH=/opt/local               # Path in which MacPorts or Fink is installed
+TARGET=arm-elf			# Or: TARGET=arm-none-eabi
+PREFIX=${HOME}/arm-elf		# Install location of your final toolchain
+PARALLEL=""			# Or: PARALLEL="-j 5" for 4 CPU's
+DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 
 BINUTILS=binutils-2.19.1
 GCC=gcc-4.4.0
@@ -34,7 +34,7 @@ case "$(uname)" in
         GDBFLAGS="--disable-werror"
 	;;
 	*)
-	echo "Found Unknown OS. Aborting!"
+	echo "Found unknown OS. Aborting!"
 	exit 1
 	;;
 esac
