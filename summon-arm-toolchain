@@ -44,25 +44,18 @@ if [ ! -e sources ]; then
 fi
 
 cd sources
-if [ ! -e ${BINUTILS}.tar.bz2 ]; then
-	echo "Downloading binutils sources..."
-	wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
-fi
 
-if [ ! -e ${GCC}.tar.bz2 ]; then
-	echo "Downloading gcc sources..."
-	wget -c ftp://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
-fi
+echo "Downloading binutils sources..."
+wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 
-if [ ! -e ${NEWLIB}.tar.gz ]; then
-	echo "Downloading newlib sources..."
-	wget -c ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
-fi
+echo "Downloading gcc sources..."
+wget -c ftp://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
 
-if [ ! -e ${GDB}.tar.bz2 ]; then
-	echo "Downloading gdb sources..."
-	wget -c ftp://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
-fi
+echo "Downloading newlib sources..."
+wget -c ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
+
+echo "Downloading gdb sources..."
+wget -c ftp://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 
 if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
