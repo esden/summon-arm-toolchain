@@ -99,7 +99,7 @@ fi
 if [ ${LIBOPENSTM32_EN} != 0 ]; then
 if [ ! -e libopenstm32-${LIBOPENSTM32}.tar.bz2 ]; then
 	echo "Cloning libopenstm32 sources..."
-	git clone git://libopenstm32.git.sourceforge.net/gitroot/libopenstm32
+	git clone git://libopenstm32.git.sourceforge.net/gitroot/libopenstm32/libopenstm32
         cd libopenstm32
         git archive --format=tar --prefix=libopenstm32-${LIBOPENSTM32}/ ${LIBOPENSTM32} | \
             bzip2 --stdout > ../libopenstm32-${LIBOPENSTM32}.tar.bz2
