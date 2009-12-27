@@ -28,6 +28,7 @@ case "$(uname)" in
 	echo "Found Linux OS."
 	GCCFLAGS=
 	GDBFLAGS=
+	BINUTILFLAGS=
 	;;
 	Darwin)
 	echo "Found Darwin OS."
@@ -35,6 +36,7 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
         GDBFLAGS="--disable-werror"
+	BINUTILFLAGS="--disable-werror"
 	;;
 	*)
 	echo "Found unknown OS. Aborting!"
@@ -125,7 +127,8 @@ if [ ! -e .${BINUTILS}.build ]; then
                            --enable-multilib \
                            --with-gnu-as \
                            --with-gnu-ld \
-                           --disable-nls || exit
+                           --disable-nls \
+			   ${BINUTILFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${BINUTILS}"
     echo "******************************************************************"
@@ -217,22 +220,22 @@ if [ ! -e .${GCC}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking ${GCC}"
     echo "******************************************************************"
-    #tar xfvj ${SOURCES}/${GCC}.tar.bz2
+    tar xfvj ${SOURCES}/${GCC}.tar.bz2
     cd build
     echo "******************************************************************"
     echo "* Configuring ${GCC}"
     echo "******************************************************************"
-#    ../${GCC}/configure --target=${TARGET} \
-#                      --prefix=${PREFIX} \
-#                      --enable-interwork \
-#                      --enable-multilib \
-#                      --enable-languages="c,c++" \
-#                      --with-newlib \
-#                      --disable-shared \
-#                      --with-gnu-as \
-#                      --with-gnu-ld \
-#		      --disable-nls \
-#		      ${GCCFLAGS} || exit
+    ../${GCC}/configure --target=${TARGET} \
+                      --prefix=${PREFIX} \
+                      --enable-interwork \
+                      --enable-multilib \
+                      --enable-languages="c,c++" \
+                      --with-newlib \
+                      --disable-shared \
+                      --with-gnu-as \
+                      --with-gnu-ld \
+		      --disable-nls \
+	 	     ${GCCFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GCC}"
     echo "******************************************************************"
