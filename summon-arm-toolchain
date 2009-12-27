@@ -2,21 +2,24 @@
 # Written by Uwe Hermann <uwe@hermann-uwe.de>, released as public domain.
 # Modified by Piotr Esden-Tempski <piotr@esden.net>, released as public domain.
 
-TARGET=arm-elf			# Or: TARGET=arm-none-eabi
-PREFIX=${HOME}/arm-elf		# Install location of your final toolchain
-PARALLEL=""			# Or: PARALLEL="-j 5" for 4 CPU's
-DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
+TARGET=arm-none-eabi			# Or: TARGET=arm-none-eabi
+PREFIX=${HOME}/arm-none-eabi		# Install location of your final toolchain
+PARALLEL=""				# Or: PARALLEL="-j 5" for 4 CPU's
+DARWIN_OPT_PATH=/opt/local		# Path in which MacPorts or Fink is installed
 
 BINUTILS=binutils-2.19.1
-GCC=gcc-4.4.0
+GCC=gcc-4.4.2
 NEWLIB=newlib-1.17.0
-GDB=gdb-6.8
+GDB=gdb-7.0
 LIBCMSIS=v1.10-2
 LIBSTM32=v3.0.0-1
 LIBSTM32USB=v3.0.1-1
 LIBOPENSTM32=master
-LIBSTM32_EN=0
+LIBSTM32_EN=1
 LIBOPENSTM32_EN=0
+
+SUMMON_DIR=$(pwd)
+SOURCES=${SUMMON_DIR}/sources
 
 export PATH="${PREFIX}/bin:${PATH}"
 
@@ -39,11 +42,11 @@ case "$(uname)" in
 	;;
 esac
 
-if [ ! -e sources ]; then
-    mkdir sources
+if [ ! -e ${SOURCES} ]; then
+    mkdir ${SOURCES}
 fi
 
-cd sources
+cd ${SOURCES}
 
 echo "Downloading binutils sources..."
 wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
@@ -101,7 +104,7 @@ if [ ! -e libopenstm32-${LIBOPENSTM32}.tar.bz2 ]; then
 fi
 fi
 
-cd ..
+cd ${SUMMON_DIR}
 
 if [ ! -e build ]; then
     mkdir build
@@ -111,7 +114,7 @@ if [ ! -e .${BINUTILS}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking ${BINUTILS}"
     echo "******************************************************************"
-    tar xfvj sources/${BINUTILS}.tar.bz2
+    tar xfvj ${SOURCES}/${BINUTILS}.tar.bz2
     cd build
     echo "******************************************************************"
     echo "* Configuring ${BINUTILS}"
@@ -143,7 +146,7 @@ if [ ! -e .${GCC}-boot.build ]; then
     echo "******************************************************************"
     echo "* Unpacking ${GCC}-boot"
     echo "******************************************************************"
-    tar xfvj sources/${GCC}.tar.bz2
+    tar xfvj ${SOURCES}/${GCC}.tar.bz2
     cd build
     echo "******************************************************************"
     echo "* Configuring ${GCC}-boot"
@@ -180,7 +183,7 @@ if [ ! -e .${NEWLIB}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking ${NEWLIB}"
     echo "******************************************************************"
-    tar xfvz sources/${NEWLIB}.tar.gz
+    tar xfvz ${SOURCES}/${NEWLIB}.tar.gz
     cd build
     echo "******************************************************************"
     echo "* Configuring ${NEWLIB}"
@@ -214,22 +217,22 @@ if [ ! -e .${GCC}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking ${GCC}"
     echo "******************************************************************"
-    tar xfvj sources/${GCC}.tar.bz2
+    #tar xfvj ${SOURCES}/${GCC}.tar.bz2
     cd build
     echo "******************************************************************"
     echo "* Configuring ${GCC}"
     echo "******************************************************************"
-    ../${GCC}/configure --target=${TARGET} \
-                      --prefix=${PREFIX} \
-                      --enable-interwork \
-                      --enable-multilib \
-                      --enable-languages="c,c++" \
-                      --with-newlib \
-                      --disable-shared \
-                      --with-gnu-as \
-                      --with-gnu-ld \
-		      --disable-nls \
-		      ${GCCFLAGS} || exit
+#    ../${GCC}/configure --target=${TARGET} \
+#                      --prefix=${PREFIX} \
+#                      --enable-interwork \
+#                      --enable-multilib \
+#                      --enable-languages="c,c++" \
+#                      --with-newlib \
+#                      --disable-shared \
+#                      --with-gnu-as \
+#                      --with-gnu-ld \
+#		      --disable-nls \
+#		      ${GCCFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GCC}"
     echo "******************************************************************"
@@ -250,7 +253,7 @@ if [ ! -e .${GDB}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking ${GDB}"
     echo "******************************************************************"
-    tar xfvj sources/${GDB}.tar.bz2
+    tar xfvj ${SOURCES}/${GDB}.tar.bz2
     cd build
     echo "******************************************************************"
     echo "* Configuring ${GDB}"
@@ -281,7 +284,7 @@ if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking libcmsis-${LIBCMSIS}"
     echo "******************************************************************"
-    tar xfvj sources/libcmsis-${LIBCMSIS}.tar.bz2
+    tar xfvj ${SOURCES}/libcmsis-${LIBCMSIS}.tar.bz2
     cd libcmsis-${LIBCMSIS}
     echo "******************************************************************"
     echo "* Building libcmsis-${LIBCMSIS}"
@@ -303,7 +306,7 @@ if [ ! -e .libstm32-${LIBSTM32}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking libstm32-${LIBSTM32}"
     echo "******************************************************************"
-    tar xfvj sources/libstm32-${LIBSTM32}.tar.bz2
+    tar xfvj ${SOURCES}/libstm32-${LIBSTM32}.tar.bz2
     cd libstm32-${LIBSTM32}
     echo "******************************************************************"
     echo "* Building libstm32-${LIBSTM32}"
@@ -325,7 +328,7 @@ if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
     echo "******************************************************************"
     echo "* Unpacking libstm32usb-${LIBSTM32USB}"
     echo "******************************************************************"
-    tar xfvj sources/libstm32usb-${LIBSTM32USB}.tar.bz2
+    tar xfvj ${SOURCES}/libstm32usb-${LIBSTM32USB}.tar.bz2
     cd libstm32usb-${LIBSTM32USB}
     echo "******************************************************************"
     echo "* Building libstm32usb-${LIBSTM32USB}"
@@ -348,7 +351,7 @@ if [ $LIBOPENSTM32_EN != 0 ]; then
     echo "******************************************************************"
     echo "* Unpacking libopenstm32-${LIBOPENSTM32}"
     echo "******************************************************************"
-    tar xfvj sources/libopenstm32-${LIBOPENSTM32}.tar.bz2
+    tar xfvj ${SOURCES}/libopenstm32-${LIBOPENSTM32}.tar.bz2
     cd libopenstm32-${LIBOPENSTM32}
     echo "******************************************************************"
     echo "* Building libopenstm32-${LIBOPENSTM32}"
