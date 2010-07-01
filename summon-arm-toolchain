@@ -165,6 +165,7 @@ if [ ! -e .${GCC}-boot.build ]; then
                       --with-gnu-as \
                       --with-gnu-ld \
                       --disable-nls \
+                      --disable-werror \
 		      ${GCCFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GCC}-boot"
@@ -198,6 +199,7 @@ if [ ! -e .${NEWLIB}.build ]; then
                          --with-gnu-as \
                          --with-gnu-ld \
                          --disable-nls \
+                         --disable-werror \
                          --disable-newlib-supplied-syscalls || exit
     echo "******************************************************************"
     echo "* Building ${NEWLIB}"
@@ -235,6 +237,7 @@ if [ ! -e .${GCC}.build ]; then
                       --with-gnu-as \
                       --with-gnu-ld \
 		      --disable-nls \
+                      --disable-werror \
 	 	     ${GCCFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GCC}"
