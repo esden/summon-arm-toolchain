@@ -15,7 +15,7 @@ Currently tested and known to work target platforms:
 
 Currently tested and known to work host platforms:
 --------------------------------------------------
-* Linux 64bit (Debian unstable)
+* Linux 32bit and 64bit (Debian unstable)
 * Mac OS X Leopard with MacPorts
 
 Notes for Mac OS X users:
