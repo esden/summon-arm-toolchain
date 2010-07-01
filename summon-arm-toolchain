@@ -57,7 +57,7 @@ echo "Downloading gcc sources..."
 wget -c http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
 
 echo "Downloading newlib sources..."
-wget -c ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
+wget -c --no-passive-ftp ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
 
 echo "Downloading gdb sources..."
 wget -c http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
