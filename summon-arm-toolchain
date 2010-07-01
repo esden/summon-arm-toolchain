@@ -23,20 +23,19 @@ SOURCES=${SUMMON_DIR}/sources
 
 export PATH="${PREFIX}/bin:${PATH}"
 
+GCCFLAGS=
+GDBFLAGS=
+BINUTILFLAGS=
+
 case "$(uname)" in
 	Linux)
 	echo "Found Linux OS."
-	GCCFLAGS=
-	GDBFLAGS=
-	BINUTILFLAGS=
 	;;
 	Darwin)
 	echo "Found Darwin OS."
 	GCCFLAGS="--with-gmp=${DARWIN_OPT_PATH} \
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
-        GDBFLAGS="--disable-werror"
-	BINUTILFLAGS="--disable-werror"
 	;;
 	*)
 	echo "Found unknown OS. Aborting!"
@@ -128,6 +127,7 @@ if [ ! -e .${BINUTILS}.build ]; then
                            --with-gnu-as \
                            --with-gnu-ld \
                            --disable-nls \
+                           --disable-werror \
 			   ${BINUTILFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${BINUTILS}"
@@ -265,6 +265,7 @@ if [ ! -e .${GDB}.build ]; then
                       --prefix=${PREFIX} \
                       --enable-interwork \
                       --enable-multilib \
+                      --disable-werror \
 		      ${GDBFLAGS} || exit
     echo "******************************************************************"
     echo "* Building ${GDB}"
