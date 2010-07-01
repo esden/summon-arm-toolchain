@@ -54,13 +54,13 @@ echo "Downloading binutils sources..."
 wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 
 echo "Downloading gcc sources..."
-wget -c ftp://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
+wget -c http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
 
 echo "Downloading newlib sources..."
 wget -c ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
 
 echo "Downloading gdb sources..."
-wget -c ftp://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+wget -c http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 
 if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
