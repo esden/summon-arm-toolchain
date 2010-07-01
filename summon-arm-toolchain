@@ -2,10 +2,10 @@
 # Written by Uwe Hermann <uwe@hermann-uwe.de>, released as public domain.
 # Modified by Piotr Esden-Tempski <piotr@esden.net>, released as public domain.
 
-TARGET=arm-none-eabi			# Or: TARGET=arm-none-eabi
-PREFIX=${HOME}/arm-none-eabi		# Install location of your final toolchain
-PARALLEL=""				# Or: PARALLEL="-j 5" for 4 CPU's
-DARWIN_OPT_PATH=/opt/local		# Path in which MacPorts or Fink is installed
+TARGET=arm-none-eabi		# Or: TARGET=arm-elf
+PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
+PARALLEL=""			# Or: PARALLEL="-j 5" for 4 CPUs
+DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 
 BINUTILS=binutils-2.19.1
 GCC=gcc-4.4.2
