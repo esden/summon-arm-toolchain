@@ -14,10 +14,10 @@ PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
 PARALLEL=""			# Or: PARALLEL="-j 5" for 4 CPUs
 DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 
-BINUTILS=binutils-2.19.1
-GCC=gcc-4.4.2
-NEWLIB=newlib-1.17.0
-GDB=gdb-7.1
+BINUTILS=binutils-2.20
+GCC=gcc-4.5.1
+NEWLIB=newlib-1.18.0
+GDB=gdb-7.2
 LIBCMSIS=v1.10-2
 LIBSTM32=v3.0.0-1
 LIBSTM32USB=v3.0.1-1
