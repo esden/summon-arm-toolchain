@@ -42,6 +42,7 @@ case "$(uname)" in
 	echo "Found Darwin OS."
 	GCCFLAGS="--with-gmp=${DARWIN_OPT_PATH} \
 	          --with-mpfr=${DARWIN_OPT_PATH} \
+	          --with-mpc=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
 	;;
 	*)
