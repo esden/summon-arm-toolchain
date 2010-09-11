@@ -16,6 +16,10 @@ TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
 PARALLEL=			# Or: PARALLEL="-j 5" for 4 CPUs
 DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
+# Set to 'sudo' if you need superuser privileges while installing
+SUDO=
+# Set to 1 to be quieter while running
+QUIET=1
 
 # For FSF GCC:
 GCCVERSION=4.5.1
@@ -37,10 +41,17 @@ LIBOPENSTM32=master
 LIBSTM32_EN=0
 LIBOPENSTM32_EN=0
 
-SUDO=
 SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
+
+MAKEFLAGS=${PARALLEL}
+TARFLAGS=v
+
+if [ ${QUIET} != 0 ]; then
+    TARFLAGS=
+    MAKEFLAGS="${MAKEFLAGS} -s"
+fi
 
 export PATH="${PREFIX}/bin:${PATH}"
 
@@ -71,13 +82,13 @@ function log {
 function unpack {
     log Unpacking $*
     # Use 'auto' mode decompression.  Replace with a switch if tar doesn't support -a
-    tar xvaf ${SOURCES}/$1.tar.*
+    tar xaf${TARFLAGS} ${SOURCES}/$1.tar.*
 }
 
 # Install a build
 function install {
     log $1
-    ${SUDO} make ${PARALLEL} $2 $3 $4 $5 $6 $7 $8
+    ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8
 }
 
 case "$(uname)" in
@@ -171,7 +182,7 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
                            --disable-werror \
 			   ${BINUTILFLAGS}
     log "Building ${BINUTILS}"
-    make ${PARALLEL}
+    make ${MAKEFLAGS}
     install ${BINUTILS} install
     cd ..
     log "Cleaning up ${BINUTILS}"
@@ -197,7 +208,7 @@ if [ ! -e ${STAMPS}/${GCC}-boot.build ]; then
                       --disable-werror \
 		      ${GCCFLAGS}
     log "Building ${GCC}-boot"
-    make ${PARALLEL} all-gcc
+    make ${MAKEFLAGS} all-gcc
     install ${GCC}-boot install-gcc
     cd ..
     log "Cleaning up ${GCC}-boot"
@@ -219,7 +230,7 @@ if [ ! -e ${STAMPS}/${NEWLIB}.build ]; then
                          --disable-werror \
                          --disable-newlib-supplied-syscalls
     log "Building ${NEWLIB}"
-    make ${PARALLEL}
+    make ${MAKEFLAGS}
     install ${NEWLIB} install
     cd ..
     log "Cleaning up ${NEWLIB}"
@@ -245,7 +256,7 @@ if [ ! -e ${STAMPS}/${GCC}.build ]; then
                       --disable-werror \
 	 	     ${GCCFLAGS}
     log "Building ${GCC}"
-    make ${PARALLEL}
+    make ${MAKEFLAGS}
     install ${GCC} install
     cd ..
     log "Cleaning up ${GCC}"
@@ -264,7 +275,7 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
                       --disable-werror \
 		      ${GDBFLAGS}
     log "Building ${GDB}"
-    make ${PARALLEL}
+    make ${MAKEFLAGS}
     install ${GDB} install
     cd ..
     log "Cleaning up ${GDB}"
