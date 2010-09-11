@@ -35,6 +35,15 @@ GCCFLAGS=
 GDBFLAGS=
 BINUTILFLAGS=
 
+# Fetch a versioned file from a URL
+function fetch {
+    if [ ! -e ${STAMPS}/$1.fetch ]; then
+        echo "Downloading $1 sources..."
+        wget -c --no-passive-ftp $2
+        touch ${STAMPS}/$1.fetch
+    fi
+}
+
 case "$(uname)" in
 	Linux)
 	echo "Found Linux OS."
@@ -56,17 +65,10 @@ mkdir -p ${STAMPS} ${SOURCES}
 
 cd ${SOURCES}
 
-echo "Downloading binutils sources..."
-wget -c http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
-
-echo "Downloading gcc sources..."
-wget -c http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
-
-echo "Downloading newlib sources..."
-wget -c --no-passive-ftp ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
-
-echo "Downloading gdb sources..."
-wget -c http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
+fetch ${GCC} ${GCC_URL}
+fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
+fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 
 if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
