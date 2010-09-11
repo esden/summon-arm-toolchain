@@ -9,6 +9,9 @@
 # libmpc-dev autoconf texinfo build-essential
 #
 
+# Stop if any command fails
+set -e
+
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
 PARALLEL=			# Or: PARALLEL="-j 5" for 4 CPUs
@@ -147,11 +150,11 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
                            --with-gnu-ld \
                            --disable-nls \
                            --disable-werror \
-			   ${BINUTILFLAGS} || exit
+			   ${BINUTILFLAGS}
     log "Building ${BINUTILS}"
-    make ${PARALLEL} || exit
+    make ${PARALLEL}
     log "Installing ${BINUTILS}"
-    make install || exit
+    make install
     cd ..
     log "Cleaning up ${BINUTILS}"
     touch ${STAMPS}/${BINUTILS}.build
@@ -175,11 +178,11 @@ if [ ! -e ${STAMPS}/${GCC}-boot.build ]; then
                       --with-gnu-ld \
                       --disable-nls \
                       --disable-werror \
-		      ${GCCFLAGS} || exit
+		      ${GCCFLAGS}
     log "Building ${GCC}-boot"
-    make ${PARALLEL} all-gcc || exit
+    make ${PARALLEL} all-gcc
     log "Installing ${GCC}-boot"
-    make install-gcc || exit
+    make install-gcc
     cd ..
     log "Cleaning up ${GCC}-boot"
     touch ${STAMPS}/${GCC}-boot.build
@@ -199,11 +202,11 @@ if [ ! -e ${STAMPS}/${NEWLIB}.build ]; then
                          --with-gnu-ld \
                          --disable-nls \
                          --disable-werror \
-                         --disable-newlib-supplied-syscalls || exit
+                         --disable-newlib-supplied-syscalls
     log "Building ${NEWLIB}"
-    make ${PARALLEL} || exit
+    make ${PARALLEL}
     log "Installing ${NEWLIB}"
-    make install || exit
+    make install
     cd ..
     log "Cleaning up ${NEWLIB}"
     touch ${STAMPS}/${NEWLIB}.build
@@ -227,11 +230,11 @@ if [ ! -e ${STAMPS}/${GCC}.build ]; then
                       --with-gnu-ld \
 		      --disable-nls \
                       --disable-werror \
-	 	     ${GCCFLAGS} || exit
+	 	     ${GCCFLAGS}
     log "Building ${GCC}"
-    make ${PARALLEL} || exit
+    make ${PARALLEL}
     log "Installing ${GCC}"
-    make install || exit
+    make install
     cd ..
     log "Cleaning up ${GCC}"
     touch ${STAMPS}/${GCC}.build
@@ -248,11 +251,11 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
                       --enable-interwork \
                       --enable-multilib \
                       --disable-werror \
-		      ${GDBFLAGS} || exit
+		      ${GDBFLAGS}
     log "Building ${GDB}"
-    make ${PARALLEL} || exit
+    make ${PARALLEL}
     log "Installing ${GDB}"
-    make install || exit
+    make install
     cd ..
     log "Cleaning up ${GDB}"
     touch ${STAMPS}/${GDB}.build
@@ -265,9 +268,9 @@ if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
     unpack ${SOURCES}/libcmsis-${LIBCMSIS}.tar.bz2
     cd libcmsis-${LIBCMSIS}
     log "Building libcmsis-${LIBCMSIS}"
-    make arch_prefix=${TARGET} prefix=${PREFIX} || exit
+    make arch_prefix=${TARGET} prefix=${PREFIX}
     log "Installing libcmsis-${LIBCMSIS}"
-    make arch_prefix=${TARGET} prefix=${PREFIX} install || exit
+    make arch_prefix=${TARGET} prefix=${PREFIX} install
     cd ..
     log "Cleaning up libcmsis-${LIBCMSIS}"
     touch .libcmsis-${LIBCMSIS}.build
@@ -279,9 +282,9 @@ if [ ! -e .libstm32-${LIBSTM32}.build ]; then
     unpack ${SOURCES}/libstm32-${LIBSTM32}.tar.bz2
     cd libstm32-${LIBSTM32}
     log "Building libstm32-${LIBSTM32}"
-    make arch_prefix=${TARGET} prefix=${PREFIX} || exit
+    make arch_prefix=${TARGET} prefix=${PREFIX}
     log "Installing libstm32-${LIBSTM32}"
-    make arch_prefix=${TARGET} prefix=${PREFIX} install || exit
+    make arch_prefix=${TARGET} prefix=${PREFIX} install
     cd ..
     log "Cleaning up libstm32-${LIBSTM32}"
     touch .libstm32-${LIBSTM32}.build
@@ -293,9 +296,9 @@ if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
     unpack ${SOURCES}/libstm32usb-${LIBSTM32USB}.tar.bz2
     cd libstm32usb-${LIBSTM32USB}
     log "Building libstm32usb-${LIBSTM32USB}"
-    make arch_prefix=${TARGET} prefix=${PREFIX} || exit
+    make arch_prefix=${TARGET} prefix=${PREFIX}
     log "Installing libstm32usb-${LIBSTM32USB}"
-    make arch_prefix=${TARGET} prefix=${PREFIX} install || exit
+    make arch_prefix=${TARGET} prefix=${PREFIX} install
     cd ..
     log "Cleaning up libstm32usb-${LIBSTM32USB}"
     touch .libstm32usb-${LIBSTM32USB}.build
@@ -308,9 +311,9 @@ if [ $LIBOPENSTM32_EN != 0 ]; then
     unpack ${SOURCES}/libopenstm32-${LIBOPENSTM32}.tar.bz2
     cd libopenstm32-${LIBOPENSTM32}
     log "Building libopenstm32-${LIBOPENSTM32}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX} || exit
+    make PREFIX=${TARGET} DESTDIR=${PREFIX}
     log "Installing libopenstm32-${LIBOPENSTM32}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX} install || exit
+    make PREFIX=${TARGET} DESTDIR=${PREFIX} install
     cd ..
     log "Cleaning up libopenstm32-${LIBOPENSTM32}"
     touch .libopenstm32-${LIBOPENSTM32}.build
