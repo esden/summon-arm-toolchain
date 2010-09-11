@@ -19,7 +19,7 @@ DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 # Set to 'sudo' if you need superuser privileges while installing
 SUDO=
 # Set to 1 to be quieter while running
-QUIET=1
+QUIET=0
 
 # For FSF GCC:
 GCCVERSION=4.5.1
@@ -45,14 +45,6 @@ SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
 
-MAKEFLAGS=${PARALLEL}
-TARFLAGS=v
-
-if [ ${QUIET} != 0 ]; then
-    TARFLAGS=
-    MAKEFLAGS="${MAKEFLAGS} -s"
-fi
-
 export PATH="${PREFIX}/bin:${PATH}"
 
 GCCFLAGS=
@@ -61,6 +53,19 @@ BINUTILFLAGS=
 
 # To default to the Cortex-M3:
 # GCCFLAGS="--with-arch=armv7-m --with-mode=thumb"
+
+# Pull in the local configuration, if any
+if [ -f local.sh ]; then
+    . ./local.sh
+fi
+
+MAKEFLAGS=${PARALLEL}
+TARFLAGS=v
+
+if [ ${QUIET} != 0 ]; then
+    TARFLAGS=
+    MAKEFLAGS="${MAKEFLAGS} -s"
+fi
 
 # Fetch a versioned file from a URL
 function fetch {
