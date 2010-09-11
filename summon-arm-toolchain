@@ -17,8 +17,17 @@ PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
 PARALLEL=			# Or: PARALLEL="-j 5" for 4 CPUs
 DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 
+# For FSF GCC:
+GCCVERSION=4.5.1
+GCC=gcc-${GCCVERSION}
+GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+
+# For the Linaro GCC:
+# GCCVERSION=4.5-2010.08-1
+# GCC=gcc-linaro-${GCCVERSION}
+# GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCVERSION}/+download/${GCC}.tar.gz
+
 BINUTILS=binutils-2.20
-GCC=gcc-4.5.1
 NEWLIB=newlib-1.18.0
 GDB=gdb-7.2
 LIBCMSIS=v1.10-2
@@ -38,6 +47,9 @@ export PATH="${PREFIX}/bin:${PATH}"
 GCCFLAGS=
 GDBFLAGS=
 BINUTILFLAGS=
+
+# To default to the Cortex-M3:
+# GCCFLAGS="--with-arch=armv7-m --with-mode=thumb"
 
 # Fetch a versioned file from a URL
 function fetch {
@@ -91,7 +103,7 @@ mkdir -p ${STAMPS} ${SOURCES}
 cd ${SOURCES}
 
 fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
-fetch ${GCC} http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+fetch ${GCC} ${GCCURL}
 fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
 fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 
