@@ -11,7 +11,7 @@
 
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
-PARALLEL=""			# Or: PARALLEL="-j 5" for 4 CPUs
+PARALLEL=			# Or: PARALLEL="-j 5" for 4 CPUs
 DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 
 BINUTILS=binutils-2.20
@@ -51,13 +51,20 @@ function log {
     echo "******************************************************************"
 }
 
+# Unpack an archive
+function unpack {
+    # Use 'auto' mode decompression.  Replace with a switch if tar doesn't support -a
+    tar xvaf $1
+}
+
 case "$(uname)" in
 	Linux)
 	echo "Found Linux OS."
 	;;
 	Darwin)
 	echo "Found Darwin OS."
-	GCCFLAGS="--with-gmp=${DARWIN_OPT_PATH} \
+	GCCFLAGS="${GCCFLAGS} \
+                  --with-gmp=${DARWIN_OPT_PATH} \
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
@@ -129,7 +136,7 @@ fi
 
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     log "Unpacking ${BINUTILS}"
-    tar xfvj ${SOURCES}/${BINUTILS}.tar.bz2
+    unpack ${SOURCES}/${BINUTILS}.tar.bz2
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
@@ -153,7 +160,7 @@ fi
 
 if [ ! -e ${STAMPS}/${GCC}-boot.build ]; then
     log "Unpacking ${GCC}-boot"
-    tar xfvj ${SOURCES}/${GCC}.tar.bz2
+    unpack ${SOURCES}/${GCC}.tar.bz2
     cd build
     log "Configuring ${GCC}-boot"
     ../${GCC}/configure --target=${TARGET} \
@@ -181,7 +188,7 @@ fi
 
 if [ ! -e ${STAMPS}/${NEWLIB}.build ]; then
     log "Unpacking ${NEWLIB}"
-    tar xfvz ${SOURCES}/${NEWLIB}.tar.gz
+    unpack ${SOURCES}/${NEWLIB}.tar.gz
     cd build
     log "Configuring ${NEWLIB}"
     ../${NEWLIB}/configure --target=${TARGET} \
@@ -206,7 +213,7 @@ fi
 # Yes, you need to build gcc again!
 if [ ! -e ${STAMPS}/${GCC}.build ]; then
     log "Unpacking ${GCC}"
-    tar xfvj ${SOURCES}/${GCC}.tar.bz2
+    unpack ${SOURCES}/${GCC}.tar.bz2
     cd build
     log "Configuring ${GCC}"
     ../${GCC}/configure --target=${TARGET} \
@@ -233,7 +240,7 @@ fi
 
 if [ ! -e ${STAMPS}/${GDB}.build ]; then
     log "Unpacking ${GDB}"
-    tar xfvj ${SOURCES}/${GDB}.tar.bz2
+    unpack ${SOURCES}/${GDB}.tar.bz2
     cd build
     log "Configuring ${GDB}"
     ../${GDB}/configure --target=${TARGET} \
@@ -255,7 +262,7 @@ fi
 if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
     log "Unpacking libcmsis-${LIBCMSIS}"
-    tar xfvj ${SOURCES}/libcmsis-${LIBCMSIS}.tar.bz2
+    unpack ${SOURCES}/libcmsis-${LIBCMSIS}.tar.bz2
     cd libcmsis-${LIBCMSIS}
     log "Building libcmsis-${LIBCMSIS}"
     make arch_prefix=${TARGET} prefix=${PREFIX} || exit
@@ -269,7 +276,7 @@ fi
 
 if [ ! -e .libstm32-${LIBSTM32}.build ]; then
     log "Unpacking libstm32-${LIBSTM32}"
-    tar xfvj ${SOURCES}/libstm32-${LIBSTM32}.tar.bz2
+    unpack ${SOURCES}/libstm32-${LIBSTM32}.tar.bz2
     cd libstm32-${LIBSTM32}
     log "Building libstm32-${LIBSTM32}"
     make arch_prefix=${TARGET} prefix=${PREFIX} || exit
@@ -283,7 +290,7 @@ fi
 
 if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
     log "Unpacking libstm32usb-${LIBSTM32USB}"
-    tar xfvj ${SOURCES}/libstm32usb-${LIBSTM32USB}.tar.bz2
+    unpack ${SOURCES}/libstm32usb-${LIBSTM32USB}.tar.bz2
     cd libstm32usb-${LIBSTM32USB}
     log "Building libstm32usb-${LIBSTM32USB}"
     make arch_prefix=${TARGET} prefix=${PREFIX} || exit
@@ -298,7 +305,7 @@ fi
 
 if [ $LIBOPENSTM32_EN != 0 ]; then
     log "Unpacking libopenstm32-${LIBOPENSTM32}"
-    tar xfvj ${SOURCES}/libopenstm32-${LIBOPENSTM32}.tar.bz2
+    unpack ${SOURCES}/libopenstm32-${LIBOPENSTM32}.tar.bz2
     cd libopenstm32-${LIBOPENSTM32}
     log "Building libopenstm32-${LIBOPENSTM32}"
     make PREFIX=${TARGET} DESTDIR=${PREFIX} || exit
