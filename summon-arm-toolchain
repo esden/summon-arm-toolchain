@@ -54,7 +54,7 @@ BINUTILFLAGS=
 # Fetch a versioned file from a URL
 function fetch {
     if [ ! -e ${STAMPS}/$1.fetch ]; then
-        echo "Downloading $1 sources..."
+        log "Downloading $1 sources..."
         wget -c --no-passive-ftp $2
         touch ${STAMPS}/$1.fetch
     fi
@@ -109,7 +109,7 @@ fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 
 if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
-	echo "Cloning libcmsis sources..."
+	log "Cloning libcmsis sources..."
 	git clone git://git.open-bldc.org/libcmsis.git
         cd libcmsis
         git archive --format=tar --prefix=libcmsis-${LIBCMSIS}/ ${LIBCMSIS} | \
@@ -119,7 +119,7 @@ if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
 fi
 
 if [ ! -e libstm32-${LIBSTM32}.tar.bz2 ]; then
-	echo "Cloning libstm32 sources..."
+	log "Cloning libstm32 sources..."
 	git clone git://git.open-bldc.org/libstm32.git
         cd libstm32
         git archive --format=tar --prefix=libstm32-${LIBSTM32}/ ${LIBSTM32} | \
@@ -129,7 +129,7 @@ if [ ! -e libstm32-${LIBSTM32}.tar.bz2 ]; then
 fi
 
 if [ ! -e libstm32usb-${LIBSTM32USB}.tar.bz2 ]; then
-	echo "Cloning libstm32usb sources..."
+	log "Cloning libstm32usb sources..."
 	git clone git://git.open-bldc.org/libstm32usb.git
         cd libstm32usb
         git archive --format=tar --prefix=libstm32usb-${LIBSTM32USB}/ ${LIBSTM32USB} | \
@@ -141,7 +141,7 @@ fi
 
 if [ ${LIBOPENSTM32_EN} != 0 ]; then
 if [ ! -e libopenstm32-${LIBOPENSTM32}.tar.bz2 ]; then
-	echo "Cloning libopenstm32 sources..."
+	log "Cloning libopenstm32 sources..."
 	git clone git://libopenstm32.git.sourceforge.net/gitroot/libopenstm32/libopenstm32
         cd libopenstm32
         git archive --format=tar --prefix=libopenstm32-${LIBOPENSTM32}/ ${LIBOPENSTM32} | \
