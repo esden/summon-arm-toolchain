@@ -14,6 +14,10 @@
 # Stop if any command fails
 set -e
 
+##############################################################################
+# Settings section
+# You probably want to customize those
+##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/arm-none-eabi	# Install location of your final toolchain
 PARALLEL=			# Or: PARALLEL="-j 5" for 4 CPUs
@@ -22,16 +26,29 @@ DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 SUDO=
 # Set to 1 to be quieter while running
 QUIET=0
+# Set to 1 to use linaro gcc instead of the FSF gcc
+USE_LINARO=0
+# Set to 1 to build libstm32 provided by ST
+LIBSTM32_EN=0
+# Set to 1 to build libopenstm32 an open source library for stm32
+LIBOPENSTM32_EN=0
+# Make the gcc default to Cortex-M3
+DEFAULT_TO_CORTEX_M3=0
 
-# For FSF GCC:
-GCCVERSION=4.5.1
-GCC=gcc-${GCCVERSION}
-GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
-
-# For the Linaro GCC:
-# GCCVERSION=4.5-2010.08-1
-# GCC=gcc-linaro-${GCCVERSION}
-# GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCVERSION}/+download/${GCC}.tar.gz
+##############################################################################
+# Version and download url settings section
+##############################################################################
+if [ ${USE_LINARO} == 0 ] ; then
+	# For FSF GCC:
+	GCCVERSION=4.5.1
+	GCC=gcc-${GCCVERSION}
+	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+else
+	# For the Linaro GCC:
+	GCCVERSION=4.5-2010.08-1
+	GCC=gcc-linaro-${GCCVERSION}
+	GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCVERSION}/+download/${GCC}.tar.gz
+fi
 
 BINUTILS=binutils-2.20
 NEWLIB=newlib-1.18.0
@@ -40,15 +57,20 @@ LIBCMSIS=v1.10-2
 LIBSTM32=v3.0.0-1
 LIBSTM32USB=v3.0.1-1
 LIBOPENSTM32=master
-LIBSTM32_EN=0
-LIBOPENSTM32_EN=0
 
-GCCFLAGS=
+##############################################################################
+# Flags section
+##############################################################################
+
 GDBFLAGS=
 BINUTILFLAGS=
 
-# To default to the Cortex-M3:
-# GCCFLAGS="--with-arch=armv7-m --with-mode=thumb"
+if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
+	GCCFLAGS=
+else
+	# To default to the Cortex-M3:
+	GCCFLAGS="--with-arch=armv7-m --with-mode=thumb"
+fi
 
 # Pull in the local configuration, if any
 if [ -f local.sh ]; then
@@ -68,6 +90,11 @@ export PATH="${PREFIX}/bin:${PATH}"
 SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
+
+##############################################################################
+# Building section
+# You probably don't have to touch anything after this
+##############################################################################
 
 # Fetch a versioned file from a URL
 function fetch {
