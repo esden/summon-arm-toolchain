@@ -11,7 +11,7 @@ To compile the ARM toolchain for barebone ARM devices:
 
 Currently tested and known to work target platforms:
 ----------------------------------------------------
-* STM32F10x (Olimex STM32-H103 eval board)
+* STM32F10x (Olimex STM32-H103 eval board, Open-BLDC v0.1, v0.2, v0.3)
 
 Currently tested and known to work host platforms:
 --------------------------------------------------
@@ -20,5 +20,16 @@ Currently tested and known to work host platforms:
 
 Notes for Mac OS X users:
 -------------------------
-You need to install gmp, mpfr and libiconv packages using MacPorts, DarwinPorts
-or fink. GCC-4.4.0 requires them.
+You need to install gmp, mpfr, mpc and libiconv packages using MacPorts,
+DarwinPorts or fink. GCC-4.5.1 requires them.
+
+Notes for Linux users:
+----------------------
+You need to install several packages on debian just run:
+
+apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
+libmpc-dev autoconf texinfo build-essential
+
+You may want to try running the following comand instead too:
+
+apt-get build-dep gcc-4.5
