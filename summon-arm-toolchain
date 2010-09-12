@@ -8,6 +8,8 @@
 # apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
 # libmpc-dev autoconf texinfo build-essential
 #
+# Or on Ubuntu Maverick give `apt-get build-dep gcc-4.5` a try.
+#
 
 # Stop if any command fails
 set -e
@@ -41,12 +43,6 @@ LIBOPENSTM32=master
 LIBSTM32_EN=0
 LIBOPENSTM32_EN=0
 
-SUMMON_DIR=$(pwd)
-SOURCES=${SUMMON_DIR}/sources
-STAMPS=${SUMMON_DIR}/stamps
-
-export PATH="${PREFIX}/bin:${PATH}"
-
 GCCFLAGS=
 GDBFLAGS=
 BINUTILFLAGS=
@@ -66,6 +62,12 @@ if [ ${QUIET} != 0 ]; then
     TARFLAGS=
     MAKEFLAGS="${MAKEFLAGS} -s"
 fi
+
+export PATH="${PREFIX}/bin:${PATH}"
+
+SUMMON_DIR=$(pwd)
+SOURCES=${SUMMON_DIR}/sources
+STAMPS=${SUMMON_DIR}/stamps
 
 # Fetch a versioned file from a URL
 function fetch {
