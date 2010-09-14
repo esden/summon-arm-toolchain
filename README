@@ -16,12 +16,15 @@ Currently tested and known to work target platforms:
 Currently tested and known to work host platforms:
 --------------------------------------------------
 * Linux 32bit and 64bit (Debian unstable)
-* Mac OS X Leopard with MacPorts
+* Mac OS X Snow Leopard with MacPorts
 
 Notes for Mac OS X users:
 -------------------------
 You need to install gmp, mpfr, mpc and libiconv packages using MacPorts,
 DarwinPorts or fink. GCC-4.5.1 requires them.
+
+For xml support in gdb you may want to install expat too. And add the 
+--with-expat parameter to GDB target.
 
 Notes for Linux users:
 ----------------------
@@ -33,3 +36,6 @@ libmpc-dev autoconf texinfo build-essential
 You may want to try running the following comand instead too:
 
 apt-get build-dep gcc-4.5
+
+For xml support in gdb you may want to install libexpat1 and libexpat1-dev 
+too. 
