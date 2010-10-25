@@ -240,6 +240,7 @@ if [ ! -e ${STAMPS}/${GCC}-boot.build ]; then
                       --with-gnu-ld \
                       --disable-nls \
                       --disable-werror \
+		      --with-system-zlib \
 		      ${GCCFLAGS}
     log "Building ${GCC}-boot"
     make ${MAKEFLAGS} all-gcc
@@ -288,6 +289,7 @@ if [ ! -e ${STAMPS}/${GCC}.build ]; then
                       --with-gnu-ld \
 		      --disable-nls \
                       --disable-werror \
+                      --with-system-zlib \
 	 	     ${GCCFLAGS}
     log "Building ${GCC}"
     make ${MAKEFLAGS}
