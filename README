@@ -41,3 +41,28 @@ apt-get build-dep gcc-4.5
 
 For xml support in gdb you may want to install libexpat1 and libexpat1-dev 
 too. 
+
+How to submit improvements and patches
+--------------------------------------
+As more and more people start to submit patches and improvements to
+Summon-Arm-Toolchain (SAR) this section seems to become necessary.
+
+First of all any way of submission is appreciated, if you just want to dump
+your version of the script to us feel free to do so. Still if you want your
+improvements and fixes to go upstream quicker there is a good way to do that.
+
+1) Create an account on GitHub. (or some other git hosting service, if you
+   really have to)
+2) Fork the main SAR repository.
+3) Clone the forked repository to your disk
+4) Change the script, try to make small changes adding one feature or bugfix at
+   a time (That makes review much easier for us).
+5) Push your changes to GitHub, or the other service you chose
+6) Test your changes, by compiling the toolchain. (You probably want to do that
+   with different options)
+7) Make sure that everything still works
+8) Test a little bit more
+9) Click on pull request on GitHub or drop us a line so that we can pull your
+   changes
+
+I know that sounds like a lot of work, but if you don't we have to do it and that means that your awesome improvement or bugfix will take longer to be integrated into the official script. And as you we want everyone to profit from such changes sooner then later. :)
