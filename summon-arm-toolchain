@@ -92,6 +92,37 @@ SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
 
 ##############################################################################
+# OS and Tooldetection section
+# Detects which tools to use
+##############################################################################
+
+case "$(uname)" in
+	Linux)
+	echo "Found Linux OS."
+	TAR=tar
+	;;
+	Darwin)
+	echo "Found Darwin OS."
+	GCCFLAGS="${GCCFLAGS} \
+                  --with-gmp=${DARWIN_OPT_PATH} \
+	          --with-mpfr=${DARWIN_OPT_PATH} \
+	          --with-mpc=${DARWIN_OPT_PATH} \
+		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
+        if ! which gnutar > /dev/null ; then
+		echo "ERROR: GNU tar not found! (try 'sudo port install gnutar')"
+		exit 1
+	else
+		echo "GNU tar found!"
+		TAR=gnutar
+	fi
+	;;
+	*)
+	echo "Found unknown OS. Aborting!"
+	exit 1
+	;;
+esac
+
+##############################################################################
 # Building section
 # You probably don't have to touch anything after this
 ##############################################################################
@@ -116,7 +147,7 @@ function log {
 function unpack {
     log Unpacking $*
     # Use 'auto' mode decompression.  Replace with a switch if tar doesn't support -a
-    tar xaf${TARFLAGS} ${SOURCES}/$1.tar.*
+    ${TAR} xaf${TARFLAGS} ${SOURCES}/$1.tar.*
 }
 
 # Install a build
@@ -125,23 +156,6 @@ function install {
     ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8
 }
 
-case "$(uname)" in
-	Linux)
-	echo "Found Linux OS."
-	;;
-	Darwin)
-	echo "Found Darwin OS."
-	GCCFLAGS="${GCCFLAGS} \
-                  --with-gmp=${DARWIN_OPT_PATH} \
-	          --with-mpfr=${DARWIN_OPT_PATH} \
-	          --with-mpc=${DARWIN_OPT_PATH} \
-		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
-	;;
-	*)
-	echo "Found unknown OS. Aborting!"
-	exit 1
-	;;
-esac
 
 mkdir -p ${STAMPS} ${SOURCES}
 
