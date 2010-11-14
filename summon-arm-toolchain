@@ -20,7 +20,6 @@ set -e
 ##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/sat	# Install location of your final toolchain
-PARALLEL=			# Or: PARALLEL="-j 5" for 4 CPUs
 DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 # Set to 'sudo' if you need superuser privileges while installing
 SUDO=
@@ -61,6 +60,10 @@ LIBOPENSTM32=master
 ##############################################################################
 # Flags section
 ##############################################################################
+
+CPUS=$(getconf _NPROCESSORS_ONLN)
+PARALLEL=-j$((CPUS + 1))
+echo "${CPUS} cpu's detected running make with '${PARALLEL}' flag"
 
 GDBFLAGS=
 BINUTILFLAGS=
