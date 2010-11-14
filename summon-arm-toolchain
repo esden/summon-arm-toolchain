@@ -348,7 +348,7 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
 fi
 
 if [ ${LIBSTM32_EN} != 0 ]; then
-if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
+if [ ! -e ${STAMPS}/libcmsis-${LIBCMSIS}.build ]; then
     unpack libcmsis-${LIBCMSIS}
     cd libcmsis-${LIBCMSIS}
     log "Building libcmsis-${LIBCMSIS}"
@@ -356,11 +356,11 @@ if [ ! -e .libcmsis-${LIBCMSIS}.build ]; then
     install libcmsis-${LIBCMSIS} arch_prefix=${TARGET} prefix=${PREFIX} install
     cd ..
     log "Cleaning up libcmsis-${LIBCMSIS}"
-    touch .libcmsis-${LIBCMSIS}.build
+    touch ${STAMPS}/libcmsis-${LIBCMSIS}.build
     rm -rf libcmsis-${LIBCMSIS}
 fi
 
-if [ ! -e .libstm32-${LIBSTM32}.build ]; then
+if [ ! -e ${STAMPS}/libstm32-${LIBSTM32}.build ]; then
     unpack libstm32-${LIBSTM32}
     cd libstm32-${LIBSTM32}
     log "Building libstm32-${LIBSTM32}"
@@ -368,11 +368,11 @@ if [ ! -e .libstm32-${LIBSTM32}.build ]; then
     install libstm32-${LIBSTM32} arch_prefix=${TARGET} prefix=${PREFIX} install
     cd ..
     log "Cleaning up libstm32-${LIBSTM32}"
-    touch .libstm32-${LIBSTM32}.build
+    touch ${STAMPS}/libstm32-${LIBSTM32}.build
     rm -rf libstm32-${LIBSTM32}
 fi
 
-if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
+if [ ! -e ${STAMPS}/libstm32usb-${LIBSTM32USB}.build ]; then
     unpack libstm32usb-${LIBSTM32USB}
     cd libstm32usb-${LIBSTM32USB}
     log "Building libstm32usb-${LIBSTM32USB}"
@@ -380,12 +380,13 @@ if [ ! -e .libstm32usb-${LIBSTM32USB}.build ]; then
     install libstm32usb-${LIBSTM32USB} arch_prefix=${TARGET} prefix=${PREFIX} install
     cd ..
     log "Cleaning up libstm32usb-${LIBSTM32USB}"
-    touch .libstm32usb-${LIBSTM32USB}.build
+    touch ${STAMPS}/libstm32usb-${LIBSTM32USB}.build
     rm -rf libstm32usb-${LIBSTM32USB}
 fi
 fi
 
 if [ $LIBOPENSTM32_EN != 0 ]; then
+if [ ! -e ${STAMPS}/libopenstm32-${LIBOPENSTM32}.build ]; then
     unpack libopenstm32-${LIBOPENSTM32}
     cd libopenstm32-${LIBOPENSTM32}
     log "Building libopenstm32-${LIBOPENSTM32}"
@@ -393,6 +394,7 @@ if [ $LIBOPENSTM32_EN != 0 ]; then
     install libopenstm32-${LIBOPENSTM32} PREFIX=${TARGET} DESTDIR=${PREFIX} install
     cd ..
     log "Cleaning up libopenstm32-${LIBOPENSTM32}"
-    touch .libopenstm32-${LIBOPENSTM32}.build
+    touch ${STAMPS}/libopenstm32-${LIBOPENSTM32}.build
     rm -rf libopenstm32-${LIBOPENSTM32}
+fi
 fi
