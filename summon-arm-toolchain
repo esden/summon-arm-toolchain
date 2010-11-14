@@ -91,15 +91,20 @@ SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
 
+
+##############################################################################
+# Tool section
+##############################################################################
+TAR=tar
+
 ##############################################################################
 # OS and Tooldetection section
-# Detects which tools to use
+# Detects which tools and flags to use
 ##############################################################################
 
 case "$(uname)" in
 	Linux)
 	echo "Found Linux OS."
-	TAR=tar
 	;;
 	Darwin)
 	echo "Found Darwin OS."
@@ -108,13 +113,6 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
-        if ! which gnutar > /dev/null ; then
-		echo "ERROR: GNU tar not found! (try 'sudo port install gnutar')"
-		exit 1
-	else
-		echo "GNU tar found!"
-		TAR=gnutar
-	fi
 	;;
 	*)
 	echo "Found unknown OS. Aborting!"
@@ -147,7 +145,23 @@ function log {
 function unpack {
     log Unpacking $*
     # Use 'auto' mode decompression.  Replace with a switch if tar doesn't support -a
-    ${TAR} xaf${TARFLAGS} ${SOURCES}/$1.tar.*
+    ARCHIVE=$(ls ${SOURCES}/$1.tar.*)
+    case ${ARCHIVE} in
+	*.bz2)
+	    echo "archive type bz2"
+	    TYPE=j
+	    ;;
+	*.gz)
+	    echo "archive type gz"
+	    TYPE=z
+	    ;;
+	*)
+	    echo "Unknown archive type of $1"
+	    echo ${ARCHIVE}
+	    exit 1
+	    ;;
+    esac
+    ${TAR} xf${TYPE}${TARFLAGS} ${SOURCES}/$1.tar.*
 }
 
 # Install a build
