@@ -69,7 +69,7 @@ if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
 	GCCFLAGS=
 else
 	# To default to the Cortex-M3:
-	GCCFLAGS="--with-arch=armv7-m --with-mode=thumb"
+	GCCFLAGS="--with-arch=armv7-m --with-mode=thumb --with-float=soft"
 fi
 
 # Pull in the local configuration, if any
@@ -291,9 +291,10 @@ if [ ! -e ${STAMPS}/${NEWLIB}.build ]; then
                          --with-gnu-ld \
                          --disable-nls \
                          --disable-werror \
-                         --disable-newlib-supplied-syscalls
+                         --disable-newlib-supplied-syscalls \
+			 --with-float=soft
     log "Building ${NEWLIB}"
-    make ${MAKEFLAGS}
+    make ${MAKEFLAGS} CFLAGS_FOR_TARGET="-msoft-float" CCASFLAGS="-msoft-float"
     install ${NEWLIB} install
     cd ..
     log "Cleaning up ${NEWLIB}"
