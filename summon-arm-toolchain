@@ -62,7 +62,11 @@ LIBOPENSTM32=master
 # Flags section
 ##############################################################################
 
-CPUS=$(getconf _NPROCESSORS_ONLN)
+if which getconf > /dev/null; then
+	CPUS=$(getconf _NPROCESSORS_ONLN)
+else
+	CPUS=1
+fi
 PARALLEL=-j$((CPUS + 1))
 echo "${CPUS} cpu's detected running make with '${PARALLEL}' flag"
 
@@ -117,6 +121,9 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
+	;;
+	CYGWIN*)
+	echo "Found CygWin that means Windows most likely."
 	;;
 	*)
 	echo "Found unknown OS. Aborting!"
