@@ -27,6 +27,8 @@ SUDO=
 QUIET=0
 # Set to 1 to use linaro gcc instead of the FSF gcc
 USE_LINARO=0
+# Set to 1 to enable building of OpenOCD
+OOCD_EN=1
 # Set to 1 to build libstm32 provided by ST
 LIBSTM32_EN=0
 # Set to 1 to build libopenstm32 an open source library for stm32
@@ -53,6 +55,7 @@ fi
 BINUTILS=binutils-2.20
 NEWLIB=newlib-1.18.0
 GDB=gdb-7.2
+OOCD=master
 LIBCMSIS=v1.10-2
 LIBSTM32=v3.0.0-1
 LIBSTM32USB=v3.0.1-1
@@ -121,6 +124,8 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
+	OOCD_CFLAGS="-m32 -I/opt/mine/include -I/opt/local/include"
+	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
 	;;
 	CYGWIN*)
 	echo "Found CygWin that means Windows most likely."
@@ -190,6 +195,20 @@ fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
 fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
 fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+
+if [ ${OOCD_EN} != 0 ]; then
+if [ ! -e openocd-${OOCD}.tar.bz2 ]; then
+	log "Cloning OpenOCD sources..."
+	git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
+        cd openocd-${OOCD}
+	./bootstrap
+	cd ..
+	tar cfvj openocd-${OOCD}.tar.bz2 openocd-${OOCD}
+        #git archive --format=tar --prefix=openocd-${OOCD}/ ${OOCD} | \
+        #    bzip2 --stdout > ../openocd-${OOCD}.tar.bz2
+        rm -rf openocd-${OOCD}
+fi
+fi
 
 if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
@@ -357,6 +376,41 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
     log "Cleaning up ${GDB}"
     touch ${STAMPS}/${GDB}.build
     rm -rf build/* ${GDB}
+fi
+
+if [ ${OOCD_EN} != 0 ]; then
+if [ ! -e ${STAMPS}/openocd-${OOCD}.build ]; then
+    unpack openocd-${OOCD}
+    cd build
+    log "Configuring openocd-${OOCD}"
+    export CFLAGS="${OOCD_CFLAGS}"
+    export LDFLAGS="${OOCD_LDFLAGS}"
+    ../openocd-${OOCD}/configure --enable-maintainer-mode \
+                      --prefix=${PREFIX} \
+                      --enable-dummy \
+		      --enable-parport \
+		      --enable-ft2232_libftdi \
+		      --enable-usb_blaster_libftdi \
+		      --enable-amtjtagaccel \
+		      --enable-zy1000 \
+		      --enable-ep93xx \
+		      --enable-at91rm9200 \
+		      --enable-gw16012 \
+		      --enable-presto_libftdi \
+		      --enable-usbprog \
+		      --enable-jlink \
+		      --enable-vsllink \
+		      --enable-rlink \
+		      --enable-arm-jtag-ew \
+		      --enable-buspirate
+    log "Building openocd-${OOCD}"
+    make ${MAKEFLAGS}
+    install openocd-${OOCD} install
+    cd ..
+    log "Cleaning up openocd-${OOCD}"
+    touch ${STAMPS}/openocd-${OOCD}.build
+    rm -rf build/* ${OOCD}
+fi
 fi
 
 if [ ${LIBSTM32_EN} != 0 ]; then
