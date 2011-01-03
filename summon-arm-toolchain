@@ -26,13 +26,13 @@ SUDO=
 # Set to 1 to be quieter while running
 QUIET=0
 # Set to 1 to use linaro gcc instead of the FSF gcc
-USE_LINARO=0
+USE_LINARO=1
 # Set to 1 to enable building of OpenOCD
 OOCD_EN=1
 # Set to 1 to build libstm32 provided by ST
 LIBSTM32_EN=0
 # Set to 1 to build libopenstm32 an open source library for stm32
-LIBOPENSTM32_EN=0
+LIBOPENSTM32_EN=1
 # Make the gcc default to Cortex-M3
 DEFAULT_TO_CORTEX_M3=0
 
