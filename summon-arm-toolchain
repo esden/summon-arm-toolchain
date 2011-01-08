@@ -383,8 +383,8 @@ if [ ! -e ${STAMPS}/openocd-${OOCD}.build ]; then
     unpack openocd-${OOCD}
     cd build
     log "Configuring openocd-${OOCD}"
-    export CFLAGS="${OOCD_CFLAGS}"
-    export LDFLAGS="${OOCD_LDFLAGS}"
+    CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
+    LDFLAGS="${LDFLAGS} ${OOCD_LDFLAGS}" \
     ../openocd-${OOCD}/configure --enable-maintainer-mode \
                       --prefix=${PREFIX} \
                       --enable-dummy \
