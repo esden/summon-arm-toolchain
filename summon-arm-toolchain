@@ -123,7 +123,7 @@ case "$(uname)" in
                   --with-gmp=${DARWIN_OPT_PATH} \
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
-		  -with-libiconv-prefix=${DARWIN_OPT_PATH}"
+		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
 	OOCD_CFLAGS="-m32 -I/opt/mine/include -I/opt/local/include"
 	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
 	;;
