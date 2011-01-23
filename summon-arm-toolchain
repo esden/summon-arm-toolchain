@@ -124,7 +124,7 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
-	OOCD_CFLAGS="-m32 -I/opt/mine/include -I/opt/local/include"
+	OOCD_CFLAGS="-I/opt/mine/include -I/opt/local/include"
 	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
 	;;
 	CYGWIN*)
@@ -386,23 +386,18 @@ if [ ! -e ${STAMPS}/openocd-${OOCD}.build ]; then
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
     LDFLAGS="${LDFLAGS} ${OOCD_LDFLAGS}" \
     ../openocd-${OOCD}/configure --enable-maintainer-mode \
-                      --prefix=${PREFIX} \
-                      --enable-dummy \
-		      --enable-parport \
-		      --enable-ft2232_libftdi \
-		      --enable-usb_blaster_libftdi \
-		      --enable-amtjtagaccel \
-		      --enable-zy1000 \
-		      --enable-ep93xx \
-		      --enable-at91rm9200 \
-		      --enable-gw16012 \
-		      --enable-presto_libftdi \
-		      --enable-usbprog \
-		      --enable-jlink \
-		      --enable-vsllink \
-		      --enable-rlink \
-		      --enable-arm-jtag-ew \
-		      --enable-buspirate
+				 --prefix=${PREFIX} \
+				 --enable-dummy \
+				 --enable-ft2232_libftdi \
+				 --enable-usb_blaster_libftdi \
+				 --enable-ep93xx \
+				 --enable-at91rm9200 \
+				 --enable-presto_libftdi \
+				 --enable-usbprog \
+				 --enable-jlink \
+				 --enable-vsllink \
+				 --enable-rlink \
+				 --enable-arm-jtag-ew
     log "Building openocd-${OOCD}"
     make ${MAKEFLAGS}
     install openocd-${OOCD} install
