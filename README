@@ -42,6 +42,23 @@ apt-get build-dep gcc-4.5
 For xml support in gdb you may want to install libexpat1 and libexpat1-dev 
 too. 
 
+Usage notes:
+------------
+
+As we support multilib now in SAT thanks to Eric Parsonage's and Bernard
+Davison's amazing work. You want to use the following GCC flag combinations to
+generate full fledged floating point supporting code for some selected
+architectures.
+
+* stm32 (probably cortex-m3 in general): -mthumb -march=armv7 -mfix-cortex-m3-ldrd -msoft-float
+* lpc21 (thumb instruction set): -mthumb -msoft-float
+* lpc21 (arm instruction set): -mthumb -march=armv4t -msoft-float
+
+If you need support for some other arm mcu and know the parameters for it just drop us a line and we will add that combination to the multilibs.
+
+You can list available combinations by running:
+arm-none-eabi-gcc -print-multi-lib
+
 How to submit improvements and patches
 --------------------------------------
 As more and more people start to submit patches and improvements to
