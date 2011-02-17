@@ -94,7 +94,6 @@ echo "LIBSTM32_EN=$LIBSTM32_EN"
 echo "LIBOPENSTM32_EN=$LIBOPENSTM32_EN"
 echo "DEFAULT_TO_CORTEX_M3=$DEFAULT_TO_CORTEX_M3"
 
-exit 0
 ##############################################################################
 # Version and download url settings section
 ##############################################################################
@@ -116,7 +115,7 @@ NEWLIB=newlib-1.19.0
 GDB=gdb-7.2
 OOCD=master
 LIBCMSIS=v1.10-3
-LIBSTM32=v3.0.0-1
+LIBSTM32=v3.0.0-2
 LIBSTM32USB=v3.0.1-1
 LIBOPENSTM32=master
 
