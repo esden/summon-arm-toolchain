@@ -46,8 +46,8 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 else
 	# For the Linaro GCC:
-	GCCRELEASE=4.5-2011.01-1
-	GCCVERSION=4.5-2011.01-1
+	GCCRELEASE=4.5-2011.02-0
+	GCCVERSION=4.5-2011.02-0
 	GCC=gcc-linaro-${GCCVERSION}
 	GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCRELEASE}/+download/${GCC}.tar.bz2
 fi
@@ -282,81 +282,42 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     rm -rf build/* ${BINUTILS}
 fi
 
-if [ ! -e ${STAMPS}/${GCC}-boot.build ]; then
-    unpack ${GCC} boot
-    cd build
-    log "Configuring ${GCC}-boot"
-    ../${GCC}/configure --target=${TARGET} \
-                      --prefix=${PREFIX} \
-                      --enable-interwork \
-                      --enable-multilib \
-                      --enable-languages="c" \
-                      --with-newlib \
-                      --without-headers \
-                      --disable-shared \
-                      --with-gnu-as \
-                      --with-gnu-ld \
-                      --disable-nls \
-                      --disable-werror \
-		      --with-system-zlib \
-		      ${GCCFLAGS}
-    log "Building ${GCC}-boot"
-    make ${MAKEFLAGS} all-gcc
-    install ${GCC}-boot install-gcc
-    cd ..
-    log "Cleaning up ${GCC}-boot"
-    touch ${STAMPS}/${GCC}-boot.build
-    rm -rf build/* ${GCC}
-fi
-
-if [ ! -e ${STAMPS}/${NEWLIB}.build ]; then
-    unpack ${NEWLIB}
-    cd build
-    log "Configuring ${NEWLIB}"
-    ../${NEWLIB}/configure --target=${TARGET} \
-                         --prefix=${PREFIX} \
-                         --enable-interwork \
-                         --enable-multilib \
-                         --with-gnu-as \
-                         --with-gnu-ld \
-                         --disable-nls \
-                         --disable-werror \
-                         --disable-newlib-supplied-syscalls \
-			 --with-float=soft
-    log "Building ${NEWLIB}"
-    make ${MAKEFLAGS} CFLAGS_FOR_TARGET="-msoft-float" CCASFLAGS="-msoft-float"
-    install ${NEWLIB} install
-    cd ..
-    log "Cleaning up ${NEWLIB}"
-    touch ${STAMPS}/${NEWLIB}.build
-    rm -rf build/* ${NEWLIB}
-fi
-
-# Yes, you need to build gcc again!
-if [ ! -e ${STAMPS}/${GCC}.build ]; then
+if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     unpack ${GCC}
+    unpack ${NEWLIB}
+    log "Adding newlib symlink to gcc"
+    ln -s `pwd`/${NEWLIB}/newlib ${GCC}
+    log "Adding libgloss symlink to gcc"
+    ln -s `pwd`/${NEWLIB}/libgloss ${GCC}
     cd build
-    log "Configuring ${GCC}"
+    log "Configuring ${GCC} and ${NEWLIB}"
     ../${GCC}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
                       --enable-interwork \
                       --enable-multilib \
                       --enable-languages="c,c++" \
                       --with-newlib \
-                      --disable-shared \
                       --with-gnu-as \
                       --with-gnu-ld \
-		      --disable-nls \
+                      --disable-nls \
+                      --disable-shared \
+		      --disable-threads \
+                      --with-headers=newlib/libc/include \
+		      --disable-libssp \
+		      --disable-libstdcxx-pch \
+		      --disable-libmudflap \
+		      --disable-libgomp \
                       --disable-werror \
-                      --with-system-zlib \
-	 	     ${GCCFLAGS}
-    log "Building ${GCC}"
+		      --with-system-zlib \
+		      --disable-newlib-supplied-syscalls \
+		      ${GCCFLAGS}
+    log "Building ${GCC} and ${NEWLIB}"
     make ${MAKEFLAGS}
     install ${GCC} install
     cd ..
-    log "Cleaning up ${GCC}"
-    touch ${STAMPS}/${GCC}.build
-    rm -rf build/* ${GCC}
+    log "Cleaning up ${GCC} and ${NEWLIB}"
+    touch ${STAMPS}/${GCC}-${NEWLIB}.build
+    rm -rf build/* ${GCC} ${NEWLIB}
 fi
 
 if [ ! -e ${STAMPS}/${GDB}.build ]; then
