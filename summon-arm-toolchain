@@ -15,8 +15,9 @@
 set -e
 
 ##############################################################################
-# Settings section
+# Default settings section
 # You probably want to customize those
+# You can also pass them as parameters to the script
 ##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/sat	# Install location of your final toolchain
@@ -36,6 +37,64 @@ LIBOPENSTM32_EN=1
 # Make the gcc default to Cortex-M3
 DEFAULT_TO_CORTEX_M3=0
 
+##############################################################################
+# Parsing command line parameters
+##############################################################################
+
+while [ $# -gt 0 ]; do
+	case $1 in
+		TARGET=*)
+		TARGET=$(echo $1 | sed 's,^TARGET=,,')
+		;;
+		PREFIX=*)
+		PREFIX=$(echo $1 | sed 's,^PREFIX=,,')
+		;;
+		DARWIN_OPT_PATH=*)
+		DARWIN_OPT_PATH=$(echo $1 | sed 's,^DARWIN_OPT_PATH=,,')
+		;;
+		SUDO=*)
+		SUDO=$(echo $1 | sed 's,^SUDO=,,')
+		;;
+		QUIET=*)
+		QUIET=$(echo $1 | sed 's,^QUIET=,,')
+		;;
+		USE_LINARO=*)
+		USE_LINARO=$(echo $1 | sed 's,^USE_LINARO=,,')
+		;;
+		OOCD_EN=*)
+		OOCD_EN=$(echo $1 | sed 's,^OOCD_EN=,,')
+		;;
+		LIBSTM32_EN=*)
+		LIBSTM32_EN=$(echo $1 | sed 's,^LIBSTM32_EN=,,')
+		;;
+		LIBOPENSTM32_EN=*)
+		LIBOPENSTM32_EN=$(echo $1 | sed 's,^LIBOPENSTM32_EN=,,')
+		;;
+		DEFAULT_TO_CORTEX_M3=*)
+		DEFAULT_TO_CORTEX_M3=$(echo $1 | sed 's,^DEFAULT_TO_CORTEX_M3=,,')
+		;;
+		*)
+		echo "Unknown parameter: $1"
+		exit 1
+		;;
+	esac
+
+	shift # shifting parameter list to access the next one
+done
+
+echo "Settings used for this build are:"
+echo "TARGET=$TARGET"
+echo "PREFIX=$PREFIX"
+echo "DARWIN_OPT_PATH=$DARWIN_OPT_PATH"
+echo "SUDO=$SUDO"
+echo "QUIET=$QUIET"
+echo "USE_LINARO=$USE_LINARO"
+echo "OOCD_EN=$OOCD_EN"
+echo "LIBSTM32_EN=$LIBSTM32_EN"
+echo "LIBOPENSTM32_EN=$LIBOPENSTM32_EN"
+echo "DEFAULT_TO_CORTEX_M3=$DEFAULT_TO_CORTEX_M3"
+
+exit 0
 ##############################################################################
 # Version and download url settings section
 ##############################################################################
