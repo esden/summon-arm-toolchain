@@ -20,7 +20,8 @@ set -e
 # You can also pass them as parameters to the script
 ##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
-PREFIX=${HOME}/sat	# Install location of your final toolchain
+DESTDIR=""
+PREFIX=${HOME}/sat		# Install location of your final toolchain
 DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 # Set to 'sudo' if you need superuser privileges while installing
 SUDO=
@@ -45,6 +46,9 @@ while [ $# -gt 0 ]; do
 	case $1 in
 		TARGET=*)
 		TARGET=$(echo $1 | sed 's,^TARGET=,,')
+		;;
+		DESTDIR=*)
+		DESTDIR=$(echo $1 | sed 's,^DESTDIR=,,')
 		;;
 		PREFIX=*)
 		PREFIX=$(echo $1 | sed 's,^PREFIX=,,')
@@ -84,6 +88,7 @@ done
 
 echo "Settings used for this build are:"
 echo "TARGET=$TARGET"
+echo "DESTDIR=$DESTDIR"
 echo "PREFIX=$PREFIX"
 echo "DARWIN_OPT_PATH=$DARWIN_OPT_PATH"
 echo "SUDO=$SUDO"
@@ -154,7 +159,7 @@ if [ ${QUIET} != 0 ]; then
     MAKEFLAGS="${MAKEFLAGS} -s"
 fi
 
-export PATH="${PREFIX}/bin:${PATH}"
+export PATH="${DESTDIR}/${PREFIX}/bin:${PATH}"
 
 SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
@@ -178,9 +183,9 @@ case "$(uname)" in
 	Darwin)
 	echo "Found Darwin OS."
 	GCCFLAGS="${GCCFLAGS} \
-                  --with-gmp=${DARWIN_OPT_PATH} \
-	          --with-mpfr=${DARWIN_OPT_PATH} \
-	          --with-mpc=${DARWIN_OPT_PATH} \
+		  --with-gmp=${DARWIN_OPT_PATH} \
+		  --with-mpfr=${DARWIN_OPT_PATH} \
+		  --with-mpc=${DARWIN_OPT_PATH} \
 		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
 	OOCD_CFLAGS="-I/opt/mine/include -I/opt/local/include"
 	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
@@ -202,9 +207,9 @@ esac
 # Fetch a versioned file from a URL
 function fetch {
     if [ ! -e ${STAMPS}/$1.fetch ]; then
-        log "Downloading $1 sources..."
-        wget -c --no-passive-ftp $2
-        touch ${STAMPS}/$1.fetch
+	log "Downloading $1 sources..."
+	wget -c --no-passive-ftp $2
+	touch ${STAMPS}/$1.fetch
     fi
 }
 
@@ -258,13 +263,13 @@ if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e openocd-${OOCD}.tar.bz2 ]; then
 	log "Cloning OpenOCD sources..."
 	git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
-        cd openocd-${OOCD}
+	cd openocd-${OOCD}
 	./bootstrap
 	cd ..
 	tar cfvj openocd-${OOCD}.tar.bz2 openocd-${OOCD}
-        #git archive --format=tar --prefix=openocd-${OOCD}/ ${OOCD} | \
-        #    bzip2 --stdout > ../openocd-${OOCD}.tar.bz2
-        rm -rf openocd-${OOCD}
+	#git archive --format=tar --prefix=openocd-${OOCD}/ ${OOCD} | \
+	#    bzip2 --stdout > ../openocd-${OOCD}.tar.bz2
+	rm -rf openocd-${OOCD}
 fi
 fi
 
@@ -272,31 +277,31 @@ if [ ${LIBSTM32_EN} != 0 ]; then
 if [ ! -e libcmsis-${LIBCMSIS}.tar.bz2 ]; then
 	log "Cloning libcmsis sources..."
 	git clone git://git.open-bldc.org/libcmsis.git
-        cd libcmsis
-        git archive --format=tar --prefix=libcmsis-${LIBCMSIS}/ ${LIBCMSIS} | \
-            bzip2 --stdout > ../libcmsis-${LIBCMSIS}.tar.bz2
-        cd ..
-        rm -rf libcmsis
+	cd libcmsis
+	git archive --format=tar --prefix=libcmsis-${LIBCMSIS}/ ${LIBCMSIS} | \
+	    bzip2 --stdout > ../libcmsis-${LIBCMSIS}.tar.bz2
+	cd ..
+	rm -rf libcmsis
 fi
 
 if [ ! -e libstm32-${LIBSTM32}.tar.bz2 ]; then
 	log "Cloning libstm32 sources..."
 	git clone git://git.open-bldc.org/libstm32.git
-        cd libstm32
-        git archive --format=tar --prefix=libstm32-${LIBSTM32}/ ${LIBSTM32} | \
-            bzip2 --stdout > ../libstm32-${LIBSTM32}.tar.bz2
-        cd ..
-        rm -rf libstm32
+	cd libstm32
+	git archive --format=tar --prefix=libstm32-${LIBSTM32}/ ${LIBSTM32} | \
+	    bzip2 --stdout > ../libstm32-${LIBSTM32}.tar.bz2
+	cd ..
+	rm -rf libstm32
 fi
 
 if [ ! -e libstm32usb-${LIBSTM32USB}.tar.bz2 ]; then
 	log "Cloning libstm32usb sources..."
 	git clone git://git.open-bldc.org/libstm32usb.git
-        cd libstm32usb
-        git archive --format=tar --prefix=libstm32usb-${LIBSTM32USB}/ ${LIBSTM32USB} | \
-            bzip2 --stdout > ../libstm32usb-${LIBSTM32USB}.tar.bz2
-        cd ..
-        rm -rf libstm32usb
+	cd libstm32usb
+	git archive --format=tar --prefix=libstm32usb-${LIBSTM32USB}/ ${LIBSTM32USB} | \
+	    bzip2 --stdout > ../libstm32usb-${LIBSTM32USB}.tar.bz2
+	cd ..
+	rm -rf libstm32usb
 fi
 fi
 
@@ -304,11 +309,11 @@ if [ ${LIBOPENSTM32_EN} != 0 ]; then
 if [ ! -e libopenstm32-${LIBOPENSTM32}.tar.bz2 ]; then
 	log "Cloning libopenstm32 sources..."
 	git clone git://libopenstm32.git.sourceforge.net/gitroot/libopenstm32/libopenstm32
-        cd libopenstm32
-        git archive --format=tar --prefix=libopenstm32-${LIBOPENSTM32}/ ${LIBOPENSTM32} | \
-            bzip2 --stdout > ../libopenstm32-${LIBOPENSTM32}.tar.bz2
-        cd ..
-        rm -rf libopenstm32
+	cd libopenstm32
+	git archive --format=tar --prefix=libopenstm32-${LIBOPENSTM32}/ ${LIBOPENSTM32} | \
+	    bzip2 --stdout > ../libopenstm32-${LIBOPENSTM32}.tar.bz2
+	cd ..
+	rm -rf libopenstm32
 fi
 fi
 
@@ -323,17 +328,17 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
-                           --prefix=${PREFIX} \
-                           --enable-interwork \
-                           --enable-multilib \
-                           --with-gnu-as \
-                           --with-gnu-ld \
-                           --disable-nls \
-                           --disable-werror \
+			   --prefix=${PREFIX} \
+			   --enable-interwork \
+			   --enable-multilib \
+			   --with-gnu-as \
+			   --with-gnu-ld \
+			   --disable-nls \
+			   --disable-werror \
 			   ${BINUTILFLAGS}
     log "Building ${BINUTILS}"
     make ${MAKEFLAGS}
-    install ${BINUTILS} install
+    install ${BINUTILS} DESTDIR=${DESTDIR} install
     cd ..
     log "Cleaning up ${BINUTILS}"
     touch ${STAMPS}/${BINUTILS}.build
@@ -359,28 +364,28 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     cd build
     log "Configuring ${GCC} and ${NEWLIB}"
     ../${GCC}/configure --target=${TARGET} \
-                      --prefix=${PREFIX} \
-                      --enable-interwork \
-                      --enable-multilib \
-                      --enable-languages="c,c++" \
-                      --with-newlib \
-                      --with-gnu-as \
-                      --with-gnu-ld \
-                      --disable-nls \
-                      --disable-shared \
+		      --prefix=${PREFIX} \
+		      --enable-interwork \
+		      --enable-multilib \
+		      --enable-languages="c,c++" \
+		      --with-newlib \
+		      --with-gnu-as \
+		      --with-gnu-ld \
+		      --disable-nls \
+		      --disable-shared \
 		      --disable-threads \
-                      --with-headers=newlib/libc/include \
+		      --with-headers=newlib/libc/include \
 		      --disable-libssp \
 		      --disable-libstdcxx-pch \
 		      --disable-libmudflap \
 		      --disable-libgomp \
-                      --disable-werror \
+		      --disable-werror \
 		      --with-system-zlib \
 		      --disable-newlib-supplied-syscalls \
 		      ${GCCFLAGS}
     log "Building ${GCC} and ${NEWLIB}"
     make ${MAKEFLAGS}
-    install ${GCC} install
+    install ${GCC} DESTDIR=${DESTDIR} install
     cd ..
     log "Cleaning up ${GCC} and ${NEWLIB}"
     touch ${STAMPS}/${GCC}-${NEWLIB}.build
@@ -392,14 +397,14 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
     cd build
     log "Configuring ${GDB}"
     ../${GDB}/configure --target=${TARGET} \
-                      --prefix=${PREFIX} \
-                      --enable-interwork \
-                      --enable-multilib \
-                      --disable-werror \
+		      --prefix=${PREFIX} \
+		      --enable-interwork \
+		      --enable-multilib \
+		      --disable-werror \
 		      ${GDBFLAGS}
     log "Building ${GDB}"
     make ${MAKEFLAGS}
-    install ${GDB} install
+    install ${GDB} DESTDIR=${DESTDIR} install
     cd ..
     log "Cleaning up ${GDB}"
     touch ${STAMPS}/${GDB}.build
@@ -414,7 +419,7 @@ if [ ! -e ${STAMPS}/openocd-${OOCD}.build ]; then
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
     LDFLAGS="${LDFLAGS} ${OOCD_LDFLAGS}" \
     ../openocd-${OOCD}/configure --enable-maintainer-mode \
-				 --prefix=${PREFIX} \
+				 --prefix=${DESTDIR}/${PREFIX} \
 				 --enable-dummy \
 				 --enable-ft2232_libftdi \
 				 --enable-usb_blaster_libftdi \
@@ -441,8 +446,8 @@ if [ ! -e ${STAMPS}/libcmsis-${LIBCMSIS}.build ]; then
     unpack libcmsis-${LIBCMSIS}
     cd libcmsis-${LIBCMSIS}
     log "Building libcmsis-${LIBCMSIS}"
-    make arch_prefix=${TARGET} prefix=${PREFIX}
-    install libcmsis-${LIBCMSIS} arch_prefix=${TARGET} prefix=${PREFIX} install
+    make arch_prefix=${TARGET} prefix=${DESTDIR}/${PREFIX}
+    install libcmsis-${LIBCMSIS} arch_prefix=${TARGET} prefix=${DESTDIR}/${PREFIX} install
     cd ..
     log "Cleaning up libcmsis-${LIBCMSIS}"
     touch ${STAMPS}/libcmsis-${LIBCMSIS}.build
@@ -453,8 +458,8 @@ if [ ! -e ${STAMPS}/libstm32-${LIBSTM32}.build ]; then
     unpack libstm32-${LIBSTM32}
     cd libstm32-${LIBSTM32}
     log "Building libstm32-${LIBSTM32}"
-    make arch_prefix=${TARGET} prefix=${PREFIX}
-    install libstm32-${LIBSTM32} arch_prefix=${TARGET} prefix=${PREFIX} install
+    make arch_prefix=${TARGET} prefix=${DESTDIR}/${PREFIX}
+    install libstm32-${LIBSTM32} arch_prefix=${TARGET} prefix=${DESTDIR}/${PREFIX} install
     cd ..
     log "Cleaning up libstm32-${LIBSTM32}"
     touch ${STAMPS}/libstm32-${LIBSTM32}.build
@@ -465,8 +470,8 @@ if [ ! -e ${STAMPS}/libstm32usb-${LIBSTM32USB}.build ]; then
     unpack libstm32usb-${LIBSTM32USB}
     cd libstm32usb-${LIBSTM32USB}
     log "Building libstm32usb-${LIBSTM32USB}"
-    make arch_prefix=${TARGET} prefix=${PREFIX}
-    install libstm32usb-${LIBSTM32USB} arch_prefix=${TARGET} prefix=${PREFIX} install
+    make arch_prefix=${TARGET} prefix=${DESTDIR}/${PREFIX}
+    install libstm32usb-${LIBSTM32USB} arch_prefix=${TARGET} prefix=${DESTDIR}/${PREFIX} install
     cd ..
     log "Cleaning up libstm32usb-${LIBSTM32USB}"
     touch ${STAMPS}/libstm32usb-${LIBSTM32USB}.build
@@ -479,11 +484,12 @@ if [ ! -e ${STAMPS}/libopenstm32-${LIBOPENSTM32}.build ]; then
     unpack libopenstm32-${LIBOPENSTM32}
     cd libopenstm32-${LIBOPENSTM32}
     log "Building libopenstm32-${LIBOPENSTM32}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX}
-    install libopenstm32-${LIBOPENSTM32} PREFIX=${TARGET} DESTDIR=${PREFIX} install
+    make PREFIX=${TARGET} DESTDIR=${DESTDIR}/${PREFIX}
+    install libopenstm32-${LIBOPENSTM32} PREFIX=${TARGET} DESTDIR=${DESTDIR}/${PREFIX} install
     cd ..
     log "Cleaning up libopenstm32-${LIBOPENSTM32}"
     touch ${STAMPS}/libopenstm32-${LIBOPENSTM32}.build
     rm -rf libopenstm32-${LIBOPENSTM32}
 fi
 fi
+
