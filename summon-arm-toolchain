@@ -342,7 +342,7 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     if [ ${BINUTILS} == "binutils-2.21" ] ; then
 	log "Patching binutils with fix for bug #12296"
 	cd ${BINUTILS}
-	patch -p0 -i ../patches/patch-binutils-fix-12296.diff
+	patch -p0 -i ../patches/patch-${BINUTILS}-fix-12296.diff
 	cd ..
     fi
 
