@@ -2,3 +2,7 @@
 openocd-master
 sources
 stamps
+build
+gcc-*
+binutils-*
+newlib-*
