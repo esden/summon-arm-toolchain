@@ -62,7 +62,7 @@ arm-none-eabi-gcc -print-multi-lib
 How to submit improvements and patches
 --------------------------------------
 As more and more people start to submit patches and improvements to
-Summon-Arm-Toolchain (SAR) this section seems to become necessary.
+Summon-Arm-Toolchain (SAT) this section seems to become necessary.
 
 First of all any way of submission is appreciated, if you just want to dump
 your version of the script to us feel free to do so. Still if you want your
@@ -70,7 +70,7 @@ improvements and fixes to go upstream quicker there is a good way to do that.
 
 1) Create an account on GitHub. (or some other git hosting service, if you
    really have to)
-2) Fork the main SAR repository.
+2) Fork the main SAT repository.
 3) Clone the forked repository to your disk
 4) Change the script, try to make small changes adding one feature or bugfix at
    a time (That makes review much easier for us).
