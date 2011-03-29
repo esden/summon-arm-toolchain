@@ -1,0 +1,4 @@
+# Ignore auto-created directories
+openocd-master
+sources
+stamps
