@@ -375,12 +375,10 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Adding libgloss symlink to gcc"
     ln -f -s `pwd`/${NEWLIB}/libgloss ${GCC}
 
-    if [ ${DEFAULT_TO_CORTEX_M3} == 1 ] ; then
-	log "Patching gcc to add multilib support"
-	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-	cd ..
-    fi
+    log "Patching gcc to add multilib support"
+    cd ${GCC}
+    patch -p0 -i ../patches/patch-${GCC}-config-arm-t-arm-elf.diff
+    cd ..
 
     cd build
     log "Configuring ${GCC} and ${NEWLIB}"
