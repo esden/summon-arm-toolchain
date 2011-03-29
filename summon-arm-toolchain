@@ -332,6 +332,14 @@ fi
 
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
+
+    if [ ${BINUTILS} == "binutils-2.21" ] ; then
+	log "Patching binutils with fix for bug #12296"
+	cd ${BINUTILS}
+	patch -p0 -i ../patches/patch-binutils-fix-12296.diff
+	cd ..
+    fi
+
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
@@ -361,7 +369,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Adding libgloss symlink to gcc"
     ln -f -s `pwd`/${NEWLIB}/libgloss ${GCC}
 
-    if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
+    if [ ${DEFAULT_TO_CORTEX_M3} == 1 ] ; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff

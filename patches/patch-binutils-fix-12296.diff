@@ -1,0 +1,18 @@
+? ARMv7_has_os_ext.patch
+Index: include/opcode/arm.h
+===================================================================
+RCS file: /cvs/src/src/include/opcode/arm.h,v
+retrieving revision 1.24
+diff -u -r1.24 arm.h
+--- include/opcode/arm.h	15 Nov 2010 10:03:05 -0000	1.24
++++ include/opcode/arm.h	29 Mar 2011 19:46:09 -0000
+@@ -109,7 +109,8 @@
+ #define ARM_AEXT_V6KT2  (ARM_AEXT_V6T2 | ARM_EXT_V6K)
+ #define ARM_AEXT_V6ZT2  (ARM_AEXT_V6T2 | ARM_EXT_SEC)
+ #define ARM_AEXT_V6ZKT2 (ARM_AEXT_V6T2 | ARM_EXT_V6K | ARM_EXT_SEC)
+-#define ARM_AEXT_V7_ARM	(ARM_AEXT_V6KT2 | ARM_EXT_V7 | ARM_EXT_BARRIER)
++#define ARM_AEXT_V7_ARM	(ARM_AEXT_V6KT2 | ARM_EXT_V7 | ARM_EXT_BARRIER \
++    | ARM_EXT_OS)
+ #define ARM_AEXT_V7A	(ARM_AEXT_V7_ARM | ARM_EXT_V7A)
+ #define ARM_AEXT_V7R	(ARM_AEXT_V7_ARM | ARM_EXT_V7R | ARM_EXT_DIV)
+ #define ARM_AEXT_NOTM \
