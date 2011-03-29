@@ -38,6 +38,8 @@ LIBOPENSTM32_EN=1
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
 CPUS=
+# Mirror to use for downloading GNU software
+GNUMIRROR=http://ftp.gnu.org/gnu
 
 ##############################################################################
 # Parsing command line parameters
@@ -78,6 +80,9 @@ while [ $# -gt 0 ]; do
 		CPUS=*)
 		CPUS=$(echo $1 | sed 's,^CPUS=,,')
 		;;
+		GNUMIRROR=*)
+		GNUMIRROR=$(echo $1 | sed 's,^GNUMIRROR=,,')
+		;;
 		*)
 		echo "Unknown parameter: $1"
 		exit 1
@@ -99,6 +104,7 @@ echo "LIBSTM32_EN=$LIBSTM32_EN"
 echo "LIBOPENSTM32_EN=$LIBOPENSTM32_EN"
 echo "DEFAULT_TO_CORTEX_M3=$DEFAULT_TO_CORTEX_M3"
 echo "CPUS=$CPUS"
+echo "GNUMIRROR=$GNUMIRROR"
 
 ##############################################################################
 # Version and download url settings section
@@ -107,7 +113,7 @@ if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
 	GCCVERSION=4.5.2
 	GCC=gcc-${GCCVERSION}
-	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+	GCCURL=${GNUMIRROR}/gcc/${GCC}/${GCC}.tar.gz
 else
 	# For the Linaro GCC:
 	GCCRELEASE=4.5-2011.02-0
@@ -261,10 +267,10 @@ mkdir -p ${STAMPS} ${SOURCES}
 
 cd ${SOURCES}
 
-fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
+fetch ${BINUTILS} ${GNUMIRROR}/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
 fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
-fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+fetch ${GDB} ${GNUMIRROR}/gdb/${GDB}.tar.bz2
 
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e openocd-${OOCD}.tar.bz2 ]; then
