@@ -111,7 +111,7 @@ echo "GNUMIRROR=$GNUMIRROR"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.5.2
+	GCCVERSION=4.6.0
 	GCC=gcc-${GCCVERSION}
 	GCCURL=${GNUMIRROR}/gcc/${GCC}/${GCC}.tar.gz
 else
