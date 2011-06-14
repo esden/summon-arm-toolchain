@@ -1,0 +1,8 @@
+# Ignore auto-created directories
+openocd-master
+sources
+stamps
+build
+gcc-*
+binutils-*
+newlib-*
