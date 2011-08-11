@@ -196,6 +196,10 @@ case "$(uname)" in
 		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
 	OOCD_CFLAGS="-I/opt/mine/include -I/opt/local/include"
 	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
+	if gcc --version | grep llvm-gcc > /dev/null ; then
+		echo "Found you are using llvm gcc, switching to clang for gcc compile."
+		GCC_CC=clang
+	fi
 	;;
 	CYGWIN*)
 	echo "Found CygWin that means Windows most likely."
@@ -334,14 +338,14 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
-                           --prefix=${PREFIX} \
-                           --enable-interwork \
-                           --enable-multilib \
-                           --with-gnu-as \
-                           --with-gnu-ld \
-                           --disable-nls \
-                           --disable-werror \
-			   ${BINUTILFLAGS}
+                             --prefix=${PREFIX} \
+                             --enable-interwork \
+                             --enable-multilib \
+                             --with-gnu-as \
+                             --with-gnu-ld \
+                             --disable-nls \
+                             --disable-werror \
+                             ${BINUTILFLAGS}
     log "Building ${BINUTILS}"
     make ${MAKEFLAGS}
     install ${BINUTILS} install
@@ -368,6 +372,12 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     fi
 
     cd build
+    if [ "X${GCC_CC}" != "X" ] ; then
+	    export GLOBAL_CC=${CC}
+	    log "Overriding the default compiler with: \"${GCC_CC}\""
+	    export CC=${GCC_CC}
+    fi
+
     log "Configuring ${GCC} and ${NEWLIB}"
     ../${GCC}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
@@ -394,6 +404,13 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     install ${GCC} install
     cd ..
     log "Cleaning up ${GCC} and ${NEWLIB}"
+
+    if [ "X${GCC_CC}" != "X" ] ; then
+	    unset CC
+	    CC=${GLOBAL_CC}
+	    unset GLOBAL_CC
+    fi
+
     touch ${STAMPS}/${GCC}-${NEWLIB}.build
     rm -rf build/* ${GCC} ${NEWLIB}
 fi
