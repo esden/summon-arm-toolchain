@@ -94,9 +94,9 @@ Notes for Mac OS X users:
 =========================
 
 You need to install gmp, mpfr, mpc and libiconv packages using MacPorts,
-DarwinPorts or fink. GCC-4.5.1 requires them.
+DarwinPorts or fink. GCC-4.5.1 requires them. You also need wget which can again be obtained from MacPorts etc.
 
-port install gmp mpfr libmpc
+port install gmp mpfr libmpc wget
 
 For xml support in gdb you may want to install expat too. And add the 
 --with-expat parameter to GDB target.
