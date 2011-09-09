@@ -116,7 +116,7 @@ else
 	GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCRELEASE}/+download/${GCC}.tar.bz2
 fi
 
-BINUTILS=binutils-2.21
+BINUTILS=binutils-2.21.1
 NEWLIB=newlib-1.19.0
 GDB=gdb-7.2
 OOCD=master
