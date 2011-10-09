@@ -21,63 +21,78 @@ By default the target is arm-none-eabi, you may want to use a different target, 
 PREFIX=
 -------
 
-By default the installation prefix is "$(HOME)/sat" you can change it to "/usr" then the binaries will be installed into "/usr/bin" and the toolchain specific files in "/usr/arm-none-eabi" assuming you did not change the TARGET variable.
+By default the installation prefix is "$(HOME)/sat" you can change it to "/usr" then the binaries will be installed into "/usr/bin" and the toolchain specific
+files in "/usr/arm-none-eabi" assuming you did not change the TARGET variable.
 
 DARWIN_OPT_PATH=
 ----------------
 
-When compiling on Mac OS X the build script has to know where MacPorts or Fink is installed. The default value is "/opt/local".
+When compiling on Mac OS X the build script has to know where MacPorts or Fink
+is installed. The default value is "/opt/local".
 
 SUDO=
 -----
 
-By default this variable is empty. If you need root rights for the install step you may set this variable to "sudo".
+By default this variable is empty. If you need root rights for the install
+step you may set this variable to "sudo".
 
-./summon-arm-toolchain SUDO=sudo
+  $ ./summon-arm-toolchain SUDO=sudo
 
-This will prefix all make install steps with the sudo command asking for your root password.
+This will prefix all make install steps with the sudo command asking for
+your root password.
 
 QUIET=
 ------
 
-By default set to 0. To decrease console output (may increase compile speed in some cases) you can set this variable to 1.
+By default set to 0. To decrease console output (may increase compile speed
+in some cases) you can set this variable to 1.
 
 USE_LINARO=
 -----------
 
-By default set to 1. To disable the usage of the Linaro GCC and use of the vanilla GCC instead set to 0.
+By default set to 1. To disable the usage of the Linaro GCC and use of the
+vanilla GCC instead set to 0.
 
 OOCD_EN=
 --------
 
-By default set to 1. To disable compilation of OpenOCD JTAG programming software set to 0.
+By default set to 1. To disable compilation of OpenOCD JTAG programming
+software set to 0.
 
 LIBSTM32_EN=
 ------------
 
-By default set to 0. To enable compilation of the non free libstm32 library set to 1.
+By default set to 0. To enable compilation of the non-free libstm32 library
+set to 1.
 
 LIBOPENSTM32_EN=
 ----------------
 
-By default set to 1. To disable compilation of the open source libopenstm32 library set to 0.
+By default set to 1. To disable compilation of the open source libopenstm32
+library set to 0.
 
 DEFAULT_TO_CORTEX_M3=
 ---------------------
 
-By default set to 0. To enable compilation of binutils and GCC to generate code for the Cortex-M3 ARM architecture by default set to 0. Tests have shown that using these options is not very reliable and is discouraged. It is more reliable to add the necessary options to your build environment instead.
+By default set to 0. To enable compilation of binutils and GCC to generate code
+for the Cortex-M3 ARM architecture by default set to 0. Tests have shown that
+using these options is not very reliable and is discouraged. It is more
+reliable to add the necessary options to your build environment instead.
 
 CPUS=
 -----
 
-Overrides the autodetection of CPU cores on the host machine. This option is translated into the -j$CPUS+1 option to the make command when running the script.
+Overrides the autodetection of CPU cores on the host machine. This option
+is translated into the -j$CPUS+1 option to the make command when running
+the script.
 
 Example:
 --------
 
-./summon-arm-toolchain LIBSTM32_EN=1 CPUS=5
+  $ ./summon-arm-toolchain LIBSTM32_EN=1 CPUS=5
 
-this will run the script with libstm32 enabled and with 5 cpus on your host machine resulting in calling all make commands with -j6.
+This will run the script with libstm32 enabled and with 5 CPUs on your host
+machine resulting in calling all make commands with -j6.
 
 Currently tested and known to work target platforms:
 ====================================================
@@ -97,30 +112,28 @@ For Mac OS X there are a few dependencies which must be installed. The wget
 and libftdi packages are required and gmp, mpfr, mpc and libiconv are needed
 by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts or fink.
 
-port install gmp mpfr libmpc wget libftdi
+  $ port install gmp mpfr libmpc wget libftdi
 
-For xml support in gdb you may want to install expat too. And add the 
---with-expat parameter to GDB target.
+For XML support in gdb you may want to install expat too. And add the 
+--with-expat parameter to the GDB target.
 
 Notes for Linux users:
-======================
+====================== 
+You need to install several packages. On Debian just run:
 
-You need to install several packages on debian just run:
+  $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
+    libmpc-dev autoconf texinfo build-essential
 
-apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-libmpc-dev autoconf texinfo build-essential
+You may want to try running the following command instead too:
 
-You may want to try running the following comand instead too:
+  $ apt-get build-dep gcc-4.5
 
-apt-get build-dep gcc-4.5
-
-For xml support in gdb you may want to install libexpat1 and libexpat1-dev 
-too. 
+For XML support in gdb you may want to install libexpat1 and libexpat1-dev too. 
 
 Usage notes:
 ============
 
-As we support multilib now in SAT thanks to Eric Parsonage's and Bernard
+We support multilib now in SAT thanks to Eric Parsonage's and Bernard
 Davison's amazing work. You want to use the following GCC flag combinations to
 generate full fledged floating point supporting code for some selected
 architectures.
@@ -129,10 +142,12 @@ architectures.
 * lpc21 (thumb instruction set): -mthumb -msoft-float
 * lpc21 (arm instruction set): -mthumb -march=armv4t -msoft-float
 
-If you need support for some other arm mcu and know the parameters for it just drop us a line and we will add that combination to the multilibs.
+If you need support for some other ARM MCU and know the parameters for it,
+just drop us a line and we will add that combination to the multilibs.
 
 You can list available combinations by running:
-arm-none-eabi-gcc -print-multi-lib
+
+  $ arm-none-eabi-gcc -print-multi-lib
 
 How to submit improvements and patches
 ======================================
@@ -144,18 +159,22 @@ First of all any way of submission is appreciated, if you just want to dump
 your version of the script to us feel free to do so. Still if you want your
 improvements and fixes to go upstream quicker there is a good way to do that.
 
-1) Create an account on GitHub. (or some other git hosting service, if you
-   really have to)
+1) Create an account on GitHub (or some other git hosting service, if you
+   really have to).
 2) Fork the main SAR repository.
-3) Clone the forked repository to your disk
+3) Clone the forked repository to your disk.
 4) Change the script, try to make small changes adding one feature or bugfix at
-   a time (That makes review much easier for us).
-5) Push your changes to GitHub, or the other service you chose
-6) Test your changes, by compiling the toolchain. (You probably want to do that
-   with different options)
-7) Make sure that everything still works
-8) Test a little bit more
-9) Click on pull request on GitHub or drop us a line so that we can pull your
-   changes
+   a time (that makes review much easier for us).
+5) Push your changes to GitHub, or the other service you chose.
+6) Test your changes, by compiling the toolchain (you probably want to do that
+   with different options).
+7) Make sure that everything still works.
+8) Test a little bit more.
+9) Click on "pull request" on GitHub or drop us a line so that we can pull your
+   changes.
 
-I know that sounds like a lot of work, but if you don't we have to do it and that means that your awesome improvement or bugfix will take longer to be integrated into the official script. And as you we want everyone to profit from such changes sooner then later. :)
+I know that sounds like a lot of work, but if you don't we have to do it and
+that means that your awesome improvement or bugfix will take longer to be
+integrated into the official script. And as you, we want everyone to profit
+from such changes sooner then later. :)
+
