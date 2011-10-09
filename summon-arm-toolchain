@@ -442,6 +442,7 @@ if [ ! -e ${STAMPS}/openocd-${OOCD}.build ]; then
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
     LDFLAGS="${LDFLAGS} ${OOCD_LDFLAGS}" \
     ../openocd-${OOCD}/configure --enable-maintainer-mode \
+				 --disable-werror \
 				 --prefix=${PREFIX} \
 				 --enable-dummy \
 				 --enable-ft2232_libftdi \
