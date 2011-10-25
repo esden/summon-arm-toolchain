@@ -29,11 +29,11 @@ QUIET=0
 # Set to 1 to use linaro gcc instead of the FSF gcc
 USE_LINARO=1
 # Set to 1 to enable building of OpenOCD
-OOCD_EN=1
+OOCD_EN=0
 # Set to 1 to build libstm32 provided by ST
 LIBSTM32_EN=0
 # Set to 1 to build libopenstm32 an open source library for stm32
-LIBOPENSTM32_EN=1
+LIBOPENSTM32_EN=0
 # Make the gcc default to Cortex-M3
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
@@ -110,10 +110,10 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 else
 	# For the Linaro GCC:
-	GCCRELEASE=4.5-2011.02-0
-	GCCVERSION=4.5-2011.02-0
+	GCCRELEASE=4.6-2011.10
+	GCCVERSION=4.6-2011.10
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/4.6/${GCCRELEASE}/+download/${GCC}.tar.bz2
 fi
 
 BINUTILS=binutils-2.21.1
@@ -335,6 +335,12 @@ fi
 
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
+
+    log "Patching binutils..."
+    cd ${BINUTILS}
+    patch -p0 -i ../patches/patch-binutils-arm-h.diff
+    cd ..
+
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
