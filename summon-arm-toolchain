@@ -345,7 +345,6 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
                              --prefix=${PREFIX} \
-                             --enable-interwork \
                              --enable-multilib \
                              --with-gnu-as \
                              --with-gnu-ld \
@@ -387,7 +386,6 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Configuring ${GCC} and ${NEWLIB}"
     ../${GCC}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
-                      --enable-interwork \
                       --enable-multilib \
                       --enable-languages="c,c++" \
                       --with-newlib \
@@ -427,7 +425,6 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
     log "Configuring ${GDB}"
     ../${GDB}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
-                      --enable-interwork \
                       --enable-multilib \
                       --disable-werror \
 		      ${GDBFLAGS}
