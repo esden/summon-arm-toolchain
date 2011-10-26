@@ -335,6 +335,10 @@ fi
 
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
+    log "Patching binutils to allow SVC support on cortex-m3"
+    cd ${BINUTILS}
+    patch -p1 -i ../patches/patch-binutils-2.21.1-svc-cortexm3.diff
+    cd ..
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
