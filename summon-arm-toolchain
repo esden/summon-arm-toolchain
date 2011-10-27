@@ -21,7 +21,7 @@ set -e
 ##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/sat	# Install location of your final toolchain
-DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
+DARWIN_OPT_PATH=/usr/local	# Path in which MacPorts or Fink is installed
 # Set to 'sudo' if you need superuser privileges while installing
 SUDO=
 # Set to 1 to be quieter while running
@@ -194,8 +194,8 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
-	OOCD_CFLAGS="-I/opt/mine/include -I/opt/local/include"
-	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
+	OOCD_CFLAGS="-I/opt/mine/include -I${DARWIN_OPT_PATH}/include"
+	OOCD_LDFLAGS="-L/opt/mine/lib -L${DARWIN_OPT_PATH}/lib"
 	if gcc --version | grep llvm-gcc > /dev/null ; then
 		echo "Found you are using llvm gcc, switching to clang for gcc compile."
 		GCC_CC=clang

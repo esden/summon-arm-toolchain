@@ -1,6 +1,6 @@
 --- gcc/config/arm/t-arm-elf.orig	2011-10-25 21:33:18.000000000 -0700
 +++ gcc/config/arm/t-arm-elf	2011-10-26 11:12:16.000000000 -0700
-@@ -31,78 +31,28 @@
+@@ -31,78 +31,29 @@
  	_arm_floatdidf _arm_floatdisf _arm_floatundidf _arm_floatundisf \
  	_clzsi2 _clzdi2 
  
@@ -82,19 +82,20 @@
 +MULTILIB_EXCEPTIONS  = marm* mthumb
 +
 +# Build with either M3 or M4 support, but not both.
-+MULTILIB_OPTIONS    += mcpu=cortex-m3/mcpu=cortex-m4
-+MULTILIB_DIRNAMES   += cortex-m3 cortex-m4
++MULTILIB_OPTIONS    += mcpu=cortex-m3/mcpu=cortex-m4/mcpu=arm7tdmi-s
++MULTILIB_DIRNAMES   += cortex-m3 cortex-m4 arm7tdmi-s
 +
 +# These don't make any sense without thumb, because GCC likes to
 +# tell you that you have to supply another commandline argument
 +# rather than just setting it itself.
-+MULTILIB_EXCEPTIONS += mcpu=cortex-m3* mcpu=cortex-m4*
++MULTILIB_EXCEPTIONS += mcpu=cortex-m3* mcpu=cortex-m4* mcpu=arm7tdmi-s*
 +
 +# All this just to get mfloat-abi=hard only specified for the M4
 +MULTILIB_OPTIONS    += mfloat-abi=hard
 +MULTILIB_DIRNAMES   += float-abi-hard
 +MULTILIB_EXCEPTIONS += mfloat-abi=hard mthumb/mfloat-abi=hard
 +MULTILIB_EXCEPTIONS += *cortex-m3*mfloat-abi=hard
++MULTILIB_EXCEPTIONS += *arm7tdmi-s*mfloat-abi=hard
  
  EXTRA_MULTILIB_PARTS = crtbegin.o crtend.o crti.o crtn.o
  
