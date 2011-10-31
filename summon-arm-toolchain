@@ -29,7 +29,7 @@ QUIET=0
 # Set to 1 to use linaro gcc instead of the FSF gcc
 USE_LINARO=1
 # Set to 1 to enable building of OpenOCD
-OOCD_EN=0
+OOCD_EN=1
 # Set to 1 to build libstm32 provided by ST
 LIBSTM32_EN=0
 # Set to 1 to build libopenstm32 an open source library for stm32
@@ -272,7 +272,8 @@ fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e openocd-${OOCD}.tar.bz2 ]; then
 	log "Cloning OpenOCD sources..."
-	git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
+	#git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
+	git clone https://github.com/qgc/openocd.git openocd-${OOCD}
         cd openocd-${OOCD}
 	./bootstrap
 	cd ..
