@@ -32,8 +32,9 @@ USE_LINARO=1
 OOCD_EN=1
 # Set to 1 to build libstm32 provided by ST
 LIBSTM32_EN=0
-# Set to 1 to build libopenstm32 an open source library for stm32
-LIBOPENSTM32_EN=0
+# Set to 1 to build libopencm3 an open source library for Cortex M3 and simalar
+# chips
+LIBOPENCM3_EN=0
 # Make the gcc default to Cortex-M3
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
@@ -69,8 +70,8 @@ while [ $# -gt 0 ]; do
 		LIBSTM32_EN=*)
 		LIBSTM32_EN=$(echo $1 | sed 's,^LIBSTM32_EN=,,')
 		;;
-		LIBOPENSTM32_EN=*)
-		LIBOPENSTM32_EN=$(echo $1 | sed 's,^LIBOPENSTM32_EN=,,')
+		LIBOPENCM3_EN=*)
+		LIBOPENCM3_EN=$(echo $1 | sed 's,^LIBOPENCM3_EN=,,')
 		;;
 		DEFAULT_TO_CORTEX_M3=*)
 		DEFAULT_TO_CORTEX_M3=$(echo $1 | sed 's,^DEFAULT_TO_CORTEX_M3=,,')
@@ -96,7 +97,7 @@ echo "QUIET=$QUIET"
 echo "USE_LINARO=$USE_LINARO"
 echo "OOCD_EN=$OOCD_EN"
 echo "LIBSTM32_EN=$LIBSTM32_EN"
-echo "LIBOPENSTM32_EN=$LIBOPENSTM32_EN"
+echo "LIBOPENCM3_EN=$LIBOPENCM3_EN"
 echo "DEFAULT_TO_CORTEX_M3=$DEFAULT_TO_CORTEX_M3"
 echo "CPUS=$CPUS"
 
@@ -123,7 +124,7 @@ OOCD=master
 LIBCMSIS=v1.10-3
 LIBSTM32=v3.0.0-2
 LIBSTM32USB=v3.0.1-1
-LIBOPENSTM32=master
+LIBOPENCM3=master
 
 ##############################################################################
 # Flags section
@@ -316,15 +317,15 @@ if [ ! -e libstm32usb-${LIBSTM32USB}.tar.bz2 ]; then
 fi
 fi
 
-if [ ${LIBOPENSTM32_EN} != 0 ]; then
-if [ ! -e libopenstm32-${LIBOPENSTM32}.tar.bz2 ]; then
-	log "Cloning libopenstm32 sources..."
-	git clone git://libopenstm32.git.sourceforge.net/gitroot/libopenstm32/libopenstm32
-        cd libopenstm32
-        git archive --format=tar --prefix=libopenstm32-${LIBOPENSTM32}/ ${LIBOPENSTM32} | \
-            bzip2 --stdout > ../libopenstm32-${LIBOPENSTM32}.tar.bz2
+if [ ${LIBOPENCM3_EN} != 0 ]; then
+if [ ! -e libopencm3-${LIBOPENCM3}.tar.bz2 ]; then
+	log "Cloning libopencm3 sources..."
+	git clone git://libopencm3.git.sourceforge.net/gitroot/libopencm3/libopencm3
+        cd libopencm3
+        git archive --format=tar --prefix=libopencm3-${LIBOPENCM3}/ ${LIBOPENCM3} | \
+            bzip2 --stdout > ../libopencm3-${LIBOPENCM3}.tar.bz2
         cd ..
-        rm -rf libopenstm32
+        rm -rf libopencm3
 fi
 fi
 
@@ -336,12 +337,10 @@ fi
 
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
-
-    log "Patching binutils..."
+    log "Patching binutils to allow SVC support on cortex-m3"
     cd ${BINUTILS}
-    patch -p0 -i ../patches/patch-binutils-arm-h.diff
+    patch -p1 -i ../patches/patch-binutils-2.21.1-svc-cortexm3.diff
     cd ..
-
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
@@ -509,16 +508,16 @@ if [ ! -e ${STAMPS}/libstm32usb-${LIBSTM32USB}.build ]; then
 fi
 fi
 
-if [ $LIBOPENSTM32_EN != 0 ]; then
-if [ ! -e ${STAMPS}/libopenstm32-${LIBOPENSTM32}.build ]; then
-    unpack libopenstm32-${LIBOPENSTM32}
-    cd libopenstm32-${LIBOPENSTM32}
-    log "Building libopenstm32-${LIBOPENSTM32}"
+if [ $LIBOPENCM3_EN != 0 ]; then
+if [ ! -e ${STAMPS}/libopencm3-${LIBOPENCM3}.build ]; then
+    unpack libopencm3-${LIBOPENCM3}
+    cd libopencm3-${LIBOPENCM3}
+    log "Building libopencm3-${LIBOPENCM3}"
     make PREFIX=${TARGET} DESTDIR=${PREFIX}
-    install libopenstm32-${LIBOPENSTM32} PREFIX=${TARGET} DESTDIR=${PREFIX} install
+    install libopencm3-${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${PREFIX} install
     cd ..
-    log "Cleaning up libopenstm32-${LIBOPENSTM32}"
-    touch ${STAMPS}/libopenstm32-${LIBOPENSTM32}.build
-    rm -rf libopenstm32-${LIBOPENSTM32}
+    log "Cleaning up libopencm3-${LIBOPENCM3}"
+    touch ${STAMPS}/libopencm3-${LIBOPENCM3}.build
+    rm -rf libopencm3-${LIBOPENCM3}
 fi
 fi

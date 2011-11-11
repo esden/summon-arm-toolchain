@@ -3,6 +3,18 @@ REMEMBER!
 THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE. NOT FOR USE
 WITH GLIBC OR THE LINUX KERNEL. DO NOT EVEN BOTHER TO ASK FOR THAT!
 
+Contact
+=======
+You can find developers and users of this script on freenode IRC network in
+#summon-arm-toolchain channel. Feel free to join us and ask questions.
+
+Remember if you have a question it may take some time untill someone answers so
+ask your question and wait for a while untill someone sees your message. 10min
+is not long enough. :)
+
+If you don't have an irc client installed you can use the web interface here:
+http://webchat.freenode.net/?channels=summon-arm-toolchain&uio=d4
+
 To compile the ARM toolchain for barebone ARM devices:
 ======================================================
 * Run ./summon-arm-toolchain
@@ -122,7 +134,7 @@ Notes for Linux users:
 You need to install several packages. On Debian just run:
 
   $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-    libmpc-dev autoconf texinfo build-essential
+    libmpc-dev autoconf texinfo build-essential libftdi-dev
 
 You may want to try running the following command instead too:
 
