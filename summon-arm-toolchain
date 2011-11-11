@@ -273,9 +273,9 @@ fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e openocd-${OOCD}.tar.bz2 ]; then
 	log "Cloning OpenOCD sources..."
-	#git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
-	git clone https://github.com/qgc/openocd.git openocd-${OOCD}
+	git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
         cd openocd-${OOCD}
+	patch -p1 -i ../../patches/patch-openocd-arm7m-registers.diff
 	./bootstrap
 	cd ..
 	tar cfvj openocd-${OOCD}.tar.bz2 openocd-${OOCD}
@@ -440,7 +440,6 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/openocd-${OOCD}.build ]; then
     unpack openocd-${OOCD}
-    (cd openocd-${OOCD} && ./bootstrap)
     cd build
     log "Configuring openocd-${OOCD}"
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
