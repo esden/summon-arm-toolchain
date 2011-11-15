@@ -120,7 +120,7 @@ fi
 BINUTILS=binutils-2.21.1
 NEWLIB=newlib-1.19.0
 GDB=gdb-7.3.1
-OOCD=master
+OOCD=9e1a16690e669b895dce7c3951b1fe893bfd6149
 LIBCMSIS=v1.10-3
 LIBSTM32=v3.0.0-2
 LIBSTM32USB=v3.0.1-1
@@ -275,6 +275,7 @@ if [ ! -e openocd-${OOCD}.tar.bz2 ]; then
 	log "Cloning OpenOCD sources..."
 	git clone git://openocd.git.sourceforge.net/gitroot/openocd/openocd openocd-${OOCD}
         cd openocd-${OOCD}
+	git checkout ${OOCD}
 	patch -p1 -i ../../patches/patch-openocd-arm7m-registers.diff
 	./bootstrap
 	cd ..
