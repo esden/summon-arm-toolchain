@@ -87,7 +87,7 @@ DEFAULT_TO_CORTEX_M3=
 ---------------------
 
 By default set to 0. To enable compilation of binutils and GCC to generate code
-for the Cortex-M3 ARM architecture by default set to 0. Tests have shown that
+for the Cortex-M3 ARM architecture by default set to 1. Tests have shown that
 using these options is not very reliable and is discouraged. It is more
 reliable to add the necessary options to your build environment instead.
 
