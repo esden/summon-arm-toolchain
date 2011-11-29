@@ -161,6 +161,19 @@ You can list available combinations by running:
 
   $ arm-none-eabi-gcc -print-multi-lib
 
+Stable tarball downloads and GIT cloning
+========================================
+
+The script has a section containing version numbers of the respective packages.
+Some packages have beside the stable release version number also a variable
+with the suffix _GIT. If that variable is set to either a branch name or a
+revision SHA the script will try to clone the repository and checkout the
+respective branch or SHA instead of downloading the stable version.
+
+If you provide a GIT branch name the script will contact the GIT server and
+query the associated SHA. If this SHA is already present in the sources
+directory it will not attempt to reclone the repository.
+
 How to submit improvements and patches
 ======================================
 
