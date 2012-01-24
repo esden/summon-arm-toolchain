@@ -21,7 +21,7 @@ set -e
 ##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/sat	# Install location of your final toolchain
-DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
+DARWIN_OPT_PATH=/usr/local	# Path in which MacPorts or Fink is installed
 # Set to 'sudo' if you need superuser privileges while installing
 SUDO=
 # Set to 1 to be quieter while running
@@ -36,7 +36,7 @@ OOCD_GIT=
 LIBSTM32_EN=0
 # Set to 1 to build libopencm3 an open source library for Cortex M3 and simalar
 # chips
-LIBOPENCM3_EN=1
+LIBOPENCM3_EN=0
 # Make the gcc default to Cortex-M3
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
@@ -115,18 +115,30 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GCCVERSION=4.5.2
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+
+	# For FSF GDB:
+	GDBVERSION=7.3.1
+	GDB=gdb-${GDBVERSION}
+	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
-	# For the Linaro GCC:
-	GCCRELEASE=4.5-2011.02-0
-	GCCVERSION=4.5-2011.02-0
+	# For Linaro GCC:
+	GCCRELEASE=4.6-2011.10
+	GCCVERSION=4.6-2011.10
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/4.6/${GCCRELEASE}/+download/${GCC}.tar.bz2
+
+	# For Linaro GDB:
+	GDBRELEASE=7.3-2011.10
+	GDBVERSION=7.3-2011.10
+	GDB=gdb-linaro-${GDBVERSION}
+	GDBURL=http://launchpad.net/gdb-linaro/7.3/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
 BINUTILS=binutils-2.21.1
 NEWLIB=newlib-1.19.0
 GDB=gdb-7.3.1
 OOCD=openocd-0.5.0
+OOCD_GIT=9e1a16690e669b895dce7c3951b1fe893bfd6149
 LIBCMSIS=
 LIBCMSIS_GIT=v1.10-3
 LIBSTM32=
@@ -205,8 +217,8 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
-	OOCD_CFLAGS="-I/opt/mine/include -I/opt/local/include"
-	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
+	OOCD_CFLAGS="-I/opt/mine/include -I${DARWIN_OPT_PATH}/include"
+	OOCD_LDFLAGS="-L/opt/mine/lib -L${DARWIN_OPT_PATH}/lib"
 	if gcc --version | grep llvm-gcc > /dev/null ; then
 		echo "Found you are using llvm gcc, switching to clang for gcc compile."
 		GCC_CC=clang
@@ -319,7 +331,7 @@ cd ${SOURCES}
 fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
 fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
-fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
 	if [ "x${OOCD_GIT}" == "x" ]; then
@@ -381,7 +393,6 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
                              --prefix=${PREFIX} \
-                             --enable-interwork \
                              --enable-multilib \
                              --with-gnu-as \
                              --with-gnu-ld \
@@ -410,6 +421,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
 	cd ..
     fi
 
@@ -423,7 +435,6 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Configuring ${GCC} and ${NEWLIB}"
     ../${GCC}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
-                      --enable-interwork \
                       --enable-multilib \
                       --enable-languages="c,c++" \
                       --with-newlib \
@@ -463,7 +474,6 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
     log "Configuring ${GDB}"
     ../${GDB}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
-                      --enable-interwork \
                       --enable-multilib \
                       --disable-werror \
 		      ${GDBFLAGS}
@@ -479,11 +489,16 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/${OOCD}.build ]; then
     unpack ${OOCD}
+    log "Patching binutils to allow SVC support on cortex-m3"
+    cd ${OOCD}
+    patch -p1 -i ../../patches/patch-openocd-arm7m-registers.diff
+    cd ..
     cd build
     log "Configuring openocd-${OOCD}"
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
     LDFLAGS="${LDFLAGS} ${OOCD_LDFLAGS}" \
     ../${OOCD}/configure --enable-maintainer-mode \
+				 --disable-option-checking \
 				 --disable-werror \
 				 --prefix=${PREFIX} \
 				 --enable-dummy \
