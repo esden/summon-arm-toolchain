@@ -36,7 +36,7 @@ OOCD_GIT=
 LIBSTM32_EN=0
 # Set to 1 to build libopencm3 an open source library for Cortex M3 and simalar
 # chips
-LIBOPENCM3_EN=0
+LIBOPENCM3_EN=1
 # Make the gcc default to Cortex-M3
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
