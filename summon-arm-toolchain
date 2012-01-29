@@ -248,9 +248,12 @@ function fetch {
 
 function clone {
     local NAME=$1
-    local GIT_REF=$2
-    local GIT_URL=$3
-    local POST_CLONE=$4
+    shift
+    local GIT_REF=$1
+    shift
+    local GIT_URL=$1
+    shift
+    local POST_CLONE="$*"
     local GIT_SHA=$(git ls-remote ${GIT_URL} ${GIT_REF} | cut -f 1)
 
     # It seems that the ref is actually a SHA as it could not be found through ls-remote
