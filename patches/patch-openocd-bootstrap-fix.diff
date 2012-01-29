@@ -1,0 +1,13 @@
+diff --git a/bootstrap b/bootstrap
+index 8a3945e..790f0cd 100755
+--- a/bootstrap
++++ b/bootstrap
+@@ -21,6 +21,8 @@ elif [ -n "$1" ]; then
+     exit 1
+ fi
+ 
++mkdir -p jimtcl
++
+ # bootstrap the autotools
+ (
+ set -x
