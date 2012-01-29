@@ -21,7 +21,7 @@ set -e
 ##############################################################################
 TARGET=arm-none-eabi		# Or: TARGET=arm-elf
 PREFIX=${HOME}/sat	# Install location of your final toolchain
-DARWIN_OPT_PATH=/usr/local	# Path in which MacPorts or Fink is installed
+DARWIN_OPT_PATH=/opt/local	# Path in which MacPorts or Fink is installed
 # Set to 'sudo' if you need superuser privileges while installing
 SUDO=
 # Set to 1 to be quieter while running
