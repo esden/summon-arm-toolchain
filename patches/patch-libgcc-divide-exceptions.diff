@@ -1,0 +1,37 @@
+--- libgcc/Makefile.in.orig	2011-12-26 20:25:30.000000000 -0800
++++ libgcc/Makefile.in	2011-12-26 21:24:54.000000000 -0800
+@@ -411,14 +411,14 @@
+ lib2-divmod-o = $(patsubst %,%$(objext),$(LIB2_DIVMOD_FUNCS))
+ $(lib2-divmod-o): %$(objext): $(gcc_srcdir)/libgcc2.c
+ 	$(gcc_compile) -DL$* -c $(gcc_srcdir)/libgcc2.c \
+-	  -fexceptions -fnon-call-exceptions $(vis_hide)
++	  -fno-exceptions -fno-non-call-exceptions $(vis_hide)
+ libgcc-objects += $(lib2-divmod-o)
+ 
+ ifeq ($(enable_shared),yes)
+ lib2-divmod-s-o = $(patsubst %,%_s$(objext),$(LIB2_DIVMOD_FUNCS))
+ $(lib2-divmod-s-o): %_s$(objext): $(gcc_srcdir)/libgcc2.c
+ 	$(gcc_s_compile) -DL$* -c $(gcc_srcdir)/libgcc2.c \
+-	  -fexceptions -fnon-call-exceptions
++	  -fno-exceptions -fno-non-call-exceptions
+ libgcc-s-objects += $(lib2-divmod-s-o)
+ endif
+ 
+@@ -706,7 +706,7 @@
+ # libgcc_eh.a, only LIB2ADDEH matters.  If we do, only LIB2ADDEHSTATIC and
+ # LIB2ADDEHSHARED matter.  (Usually all three are identical.)
+ 
+-c_flags := -fexceptions
++c_flags := -fno-exceptions
+ 
+ ifeq ($(enable_shared),yes)
+ 
+@@ -728,7 +728,7 @@
+ 
+ # Build LIBUNWIND.
+ 
+-c_flags := -fexceptions
++c_flags := -fno-exceptions
+ 
+ libunwind-objects += $(addsuffix $(objext),$(basename $(notdir $(LIBUNWIND))))
+ 

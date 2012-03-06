@@ -6,7 +6,7 @@
 # Requirements (example is for Debian, replace package names as needed):
 #
 # apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-# libmpc-dev autoconf texinfo build-essential
+# libmpc-dev autoconf texinfo build-essential libftdi-dev
 #
 # Or on Ubuntu Maverick give `apt-get build-dep gcc-4.5` a try.
 #
@@ -115,18 +115,29 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GCCVERSION=4.5.2
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+
+	# For FSF GDB:
+	GDBVERSION=7.3.1
+	GDB=gdb-${GDBVERSION}
+	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
-	# For the Linaro GCC:
-	GCCRELEASE=4.5-2011.02-0
-	GCCVERSION=4.5-2011.02-0
+	# For Linaro GCC:
+	GCCRELEASE=4.6-2011.10
+	GCCVERSION=4.6-2011.10
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.5/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/4.6/${GCCRELEASE}/+download/${GCC}.tar.bz2
+
+	# For Linaro GDB:
+	GDBRELEASE=7.3-2011.10
+	GDBVERSION=7.3-2011.10
+	GDB=gdb-linaro-${GDBVERSION}
+	GDBURL=http://launchpad.net/gdb-linaro/7.3/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
 BINUTILS=binutils-2.21.1
 NEWLIB=newlib-1.19.0
-GDB=gdb-7.3.1
 OOCD=openocd-0.5.0
+OOCD_GIT=9e1a16690e669b895dce7c3951b1fe893bfd6149
 LIBCMSIS=
 LIBCMSIS_GIT=v1.10-3
 LIBSTM32=
@@ -182,6 +193,7 @@ export PATH="${PREFIX}/bin:${PATH}"
 SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
+PATCHES=${SUMMON_DIR}/patches
 
 
 ##############################################################################
@@ -205,8 +217,8 @@ case "$(uname)" in
 	          --with-mpfr=${DARWIN_OPT_PATH} \
 	          --with-mpc=${DARWIN_OPT_PATH} \
 		  --with-libiconv-prefix=${DARWIN_OPT_PATH}"
-	OOCD_CFLAGS="-I/opt/mine/include -I/opt/local/include"
-	OOCD_LDFLAGS="-L/opt/mine/lib -L/opt/local/lib"
+	OOCD_CFLAGS="-I/opt/mine/include -I${DARWIN_OPT_PATH}/include"
+	OOCD_LDFLAGS="-L/opt/mine/lib -L${DARWIN_OPT_PATH}/lib"
 	if gcc --version | grep llvm-gcc > /dev/null ; then
 		echo "Found you are using llvm gcc, switching to clang for gcc compile."
 		GCC_CC=clang
@@ -236,9 +248,12 @@ function fetch {
 
 function clone {
     local NAME=$1
-    local GIT_REF=$2
-    local GIT_URL=$3
-    local POST_CLONE=$4
+    shift
+    local GIT_REF=$1
+    shift
+    local GIT_URL=$1
+    shift
+    local POST_CLONE="$*"
     local GIT_SHA=$(git ls-remote ${GIT_URL} ${GIT_REF} | cut -f 1)
 
     # It seems that the ref is actually a SHA as it could not be found through ls-remote
@@ -263,7 +278,7 @@ function clone {
         git checkout -b sat-branch ${GIT_SHA}
 	if [ "x${POST_CLONE}" != "x" ]; then
 		log "Running post clone code for ${NAME}-${GIT_SHA} ..."
-		${POST_CLONE}
+		eval ${POST_CLONE}
 	fi
         log "Removing .git directory from ${NAME}-${GIT_SHA} ..."
         rm -rf .git
@@ -319,13 +334,17 @@ cd ${SOURCES}
 fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
 fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
-fetch ${GDB} http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
+fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
 	if [ "x${OOCD_GIT}" == "x" ]; then
 		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.5.0/${OOCD}.tar.bz2
 	else
-		clone oocd ${OOCD_GIT} git://openocd.git.sourceforge.net/gitroot/openocd/openocd ./bootstrap
+		clone oocd ${OOCD_GIT} git://openocd.git.sourceforge.net/gitroot/openocd/openocd \
+			"patch -p1 -i ${PATCHES}/patch-openocd-arm7m-registers.diff ; \
+			patch -p1 -i ${PATCHES}/patch-openocd-automake-fix.diff ; \
+			patch -p1 -i ${PATCHES}/patch-openocd-bootstrap-fix.diff ; \
+			./bootstrap"
 	fi
 fi
 
@@ -375,13 +394,12 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
     log "Patching binutils to allow SVC support on cortex-m3"
     cd ${BINUTILS}
-    patch -p1 -i ../patches/patch-binutils-2.21.1-svc-cortexm3.diff
+    patch -p1 -i ${PATCHES}/patch-binutils-2.21.1-svc-cortexm3.diff
     cd ..
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
                              --prefix=${PREFIX} \
-                             --enable-interwork \
                              --enable-multilib \
                              --with-gnu-as \
                              --with-gnu-ld \
@@ -409,7 +427,8 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+	patch -p0 -i ${PATCHES}/patch-gcc-config-arm-t-arm-elf.diff
+	patch -p0 -i ${PATCHES}/patch-libgcc-divide-exceptions.diff
 	cd ..
     fi
 
@@ -423,7 +442,6 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Configuring ${GCC} and ${NEWLIB}"
     ../${GCC}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
-                      --enable-interwork \
                       --enable-multilib \
                       --enable-languages="c,c++" \
                       --with-newlib \
@@ -463,7 +481,6 @@ if [ ! -e ${STAMPS}/${GDB}.build ]; then
     log "Configuring ${GDB}"
     ../${GDB}/configure --target=${TARGET} \
                       --prefix=${PREFIX} \
-                      --enable-interwork \
                       --enable-multilib \
                       --disable-werror \
 		      ${GDBFLAGS}
@@ -479,11 +496,13 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/${OOCD}.build ]; then
     unpack ${OOCD}
+    log "Patching binutils to allow SVC support on cortex-m3"
     cd build
     log "Configuring openocd-${OOCD}"
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
     LDFLAGS="${LDFLAGS} ${OOCD_LDFLAGS}" \
     ../${OOCD}/configure --enable-maintainer-mode \
+				 --disable-option-checking \
 				 --disable-werror \
 				 --prefix=${PREFIX} \
 				 --enable-dummy \

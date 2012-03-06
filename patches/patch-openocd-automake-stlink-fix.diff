@@ -1,0 +1,13 @@
+diff --git a/src/jtag/stlink/Makefile.am b/src/jtag/stlink/Makefile.am
+index 09e47fd..fce19ca 100644
+--- a/src/jtag/stlink/Makefile.am
++++ b/src/jtag/stlink/Makefile.am
+@@ -5,7 +5,7 @@ noinst_LTLIBRARIES = libocdstlink.la
+ libocdstlink_la_SOURCES = \
+ 	$(STLINKFILES)
+ 
+-nobase_dist_pkglib_DATA =
++nobase_dist_pkgdata_DATA =
+ 
+ STLINKFILES =
+ 

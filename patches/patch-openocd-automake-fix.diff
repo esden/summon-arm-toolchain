@@ -1,0 +1,36 @@
+diff --git a/src/jtag/drivers/Makefile.am b/src/jtag/drivers/Makefile.am
+index 7dbaab2..d421133 100644
+--- a/src/jtag/drivers/Makefile.am
++++ b/src/jtag/drivers/Makefile.am
+@@ -5,7 +5,7 @@ noinst_LTLIBRARIES = libocdjtagdrivers.la
+ libocdjtagdrivers_la_SOURCES = \
+ 	$(DRIVERFILES)
+ 
+-nobase_dist_pkglib_DATA =
++nobase_dist_pkgdata_DATA =
+ 
+ ULINK_FIRMWARE = $(srcdir)/OpenULINK
+ 
+@@ -74,7 +74,7 @@ DRIVERFILES += rlink.c rlink_speed_table.c
+ endif
+ if ULINK
+ DRIVERFILES += ulink.c
+-nobase_dist_pkglib_DATA += $(ULINK_FIRMWARE)/ulink_firmware.hex
++nobase_dist_pkgdata_DATA += $(ULINK_FIRMWARE)/ulink_firmware.hex
+ endif
+ if VSLLINK
+ DRIVERFILES += versaloon/usbtoxxx/usbtogpio.c
+diff --git a/src/target/Makefile.am b/src/target/Makefile.am
+index ab7b3be..7a2279d 100644
+--- a/src/target/Makefile.am
++++ b/src/target/Makefile.am
+@@ -164,7 +164,7 @@ noinst_HEADERS = \
+ 	avr32_mem.h \
+ 	avr32_regs.h
+ 
+-nobase_dist_pkglib_DATA =
+-nobase_dist_pkglib_DATA += ecos/at91eb40a.elf
++nobase_dist_pkgdata_DATA =
++nobase_dist_pkgdata_DATA += ecos/at91eb40a.elf
+ 
+ MAINTAINERCLEANFILES = $(srcdir)/Makefile.in
