@@ -354,7 +354,7 @@ if [ ${LIBSTM32_EN} != 0 ]; then
 		exit 1
 		#fetch ${LIBCMSIS} http://.../${LIBCMSIS}.tar.bz2
 	else
-		clone libcmsis ${LIBCMSIS_GIT} git://git.open-bldc.org/libcmsis.git
+		clone libcmsis ${LIBCMSIS_GIT} git://github.com/esden/libcmsis.git
 	fi
 
 	if [ "x${LIBSTM32_GIT}" == "x" ]; then
@@ -362,7 +362,7 @@ if [ ${LIBSTM32_EN} != 0 ]; then
 		exit 1
 		#fetch ${LIBSTM32} http://.../${LIBSTM32}.tar.bz2
 	else
-		clone libstm32 ${LIBSTM32_GIT} git://git.open-bldc.org/libstm32.git
+		clone libstm32 ${LIBSTM32_GIT} git://github.com/esden/libstm32.git
 	fi
 
 	if [ "x${LIBSTM32USB_GIT}" == "x" ]; then
@@ -370,7 +370,7 @@ if [ ${LIBSTM32_EN} != 0 ]; then
 		exit 1
 		#fetch ${LIBSTM32USB} http://.../${LIBSTM32USB}.tar.bz2
 	else
-		clone libstm32usb ${LIBSTM32USB_GIT} git://git.open-bldc.org/libstm32usb.git
+		clone libstm32usb ${LIBSTM32USB_GIT} git://github.com/esden/libstm32usb.git
 	fi
 fi
 
