@@ -489,9 +489,9 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/${OOCD}.build ]; then
     unpack ${OOCD}
-    log "Patching binutils to allow SVC support on cortex-m3"
+    log "Patching openocd to support arm7m registers"
     cd ${OOCD}
-    patch -p1 -i ../../patches/patch-openocd-arm7m-registers.diff
+    patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
     cd ..
     cd build
     log "Configuring openocd-${OOCD}"
