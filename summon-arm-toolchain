@@ -136,7 +136,7 @@ fi
 
 BINUTILS=binutils-2.21.1
 NEWLIB=newlib-1.19.0
-GDB=gdb-7.3.1
+#GDB=gdb-7.3.1
 OOCD=openocd-0.5.0
 OOCD_GIT=9e1a16690e669b895dce7c3951b1fe893bfd6149
 LIBCMSIS=
@@ -421,6 +421,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+  patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
 	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
 	cd ..
     fi
