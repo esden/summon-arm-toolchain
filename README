@@ -148,11 +148,12 @@ Usage notes:
 We support multilib now in SAT thanks to Eric Parsonage's and Bernard
 Davison's amazing work. You want to use the following GCC flag combinations to
 generate full fledged floating point supporting code for some selected
-architectures.
+architectures (default is to use software floating point).
 
-* stm32 (probably cortex-m3 in general): -mthumb -march=armv7 -mfix-cortex-m3-ldrd -msoft-float
-* lpc21 (thumb instruction set): -mthumb -msoft-float
-* lpc21 (arm instruction set): -mthumb -march=armv4t -msoft-float
+* ARM7TDMI-S targets: -mthumb -mcpu=arm7tdmi-s
+* Cortex-M0 targets: -mthumb -mcpu=cortex-m0
+* Cortex-M3 targets: -mthumb -mcpu=cortex-m3
+* Cortex-M4 targets: -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16
 
 If you need support for some other ARM MCU and know the parameters for it,
 just drop us a line and we will add that combination to the multilibs.
