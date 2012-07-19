@@ -17,7 +17,11 @@ http://webchat.freenode.net/?channels=summon-arm-toolchain&uio=d4
 
 To compile the ARM toolchain for barebone ARM devices:
 ======================================================
-* Run ./summon-arm-toolchain
+* git clone https://github.com/esden/summon-arm-toolchain.git
+ or
+* wget https://github.com/esden/summon-arm-toolchain/zipball/master; unzip master
+* cd *summon-arm-toolchain*
+* ./summon-arm-toolchain
 * Profit
 
 Command line options
