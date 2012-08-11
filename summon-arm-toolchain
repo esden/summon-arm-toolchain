@@ -420,6 +420,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+  patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
 	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
 	cd ..
     fi
