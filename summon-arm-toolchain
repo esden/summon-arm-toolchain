@@ -41,6 +41,8 @@ LIBOPENCM3_EN=1
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
 CPUS=
+# Set to 1 to generate .deb package
+DEB=0
 
 ##############################################################################
 # Parsing command line parameters
@@ -84,6 +86,9 @@ while [ $# -gt 0 ]; do
 		CPUS=*)
 		CPUS=$(echo $1 | sed 's,^CPUS=,,')
 		;;
+		DEB=*)
+		DEB=$(echo $1 | sed 's,^DEB=,,')
+		;;
 		*)
 		echo "Unknown parameter: $1"
 		exit 1
@@ -92,6 +97,10 @@ while [ $# -gt 0 ]; do
 
 	shift # shifting parameter list to access the next one
 done
+
+if [ ${DEB} == 1 ] ; then
+	PREFIX=/usr/local
+fi
 
 echo "Settings used for this build are:"
 echo "TARGET=$TARGET"
@@ -188,11 +197,16 @@ if [ ${QUIET} != 0 ]; then
     MAKEFLAGS="${MAKEFLAGS} -s"
 fi
 
-export PATH="${PREFIX}/bin:${PATH}"
-
 SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
+
+if [ ${DEB} == 1 ] ; then
+	DESTDIR=${SUMMON_DIR}/deb/debian/tmp
+	SUDO=fakeroot
+fi
+
+export PATH="${DESTDIR}${PREFIX}/bin:${PATH}"
 
 
 ##############################################################################
@@ -319,7 +333,7 @@ function unpack {
 # Install a build
 function install {
     log $1
-    ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8
+    ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8 DESTDIR=${DESTDIR}
 }
 
 
@@ -565,11 +579,93 @@ if [ ! -e ${STAMPS}/${LIBOPENCM3}.build ]; then
     unpack ${LIBOPENCM3}
     cd ${LIBOPENCM3}
     log "Building ${LIBOPENCM3}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX}
-    install ${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${PREFIX} install
+    make PREFIX=${PREFIX}/${TARGET}
+    install ${LIBOPENCM3} PREFIX=${PREFIX}/${TARGET} install
     cd ..
     log "Cleaning up ${LIBOPENCM3}"
     touch ${STAMPS}/${LIBOPENCM3}.build
     rm -rf ${LIBOPENCM3}
+fi
+fi
+
+if [ ${DEB} == 1 ] ; then
+if [ ! -e ${STAMPS}/summon-arm-toolchain_deb.build ]; then
+	cd ${SUMMON_DIR}/deb
+	log "Building debian package"
+	# Debian control
+	cat > debian/control << END
+Source: summon-arm-toolchain
+Section: devel
+Maintainer: $DEBFULLNAME <$DEBEMAIL>
+Build-Depends: debhelper (>= 9), cdbs
+Priority: optional
+Standards-Version: 3.9.3
+
+Package: summon-arm-toolchain
+Architecture: any
+Depends: \${shlibs:Depends}, \${misc:Depends}
+Description: A toolchain for bare bone ARM processors
+ Is composed by $BINUTILS, $GCC and $GDB.
+
+END
+	# Empty changelog
+	debchange\
+		--distribution unstable\
+		--create\
+		--empty\
+		--package summon-arm-toolchain\
+		--newversion 0.1-1
+	# Debian rules
+	cat > debian/rules << END
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+%:
+	dh \$@
+
+override_dh_usrlocal:
+override_dh_testdir:
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_prep:
+	rm -f debian/summon-arm-toolchain.substvars
+	rm -f debian/summon-arm-toolchain.*.debhelper
+	rm -rf debian/summon-arm-toolchain/
+END
+	# Debian magic install
+	cat > debian/summon-arm-toolchain.install << END
+debian/tmp/usr/local /usr/
+END
+
+	cat > debian/copyright << END
+Files: debian/*
+Copyright: (C) 2012 $DEBFULLNAME <$DEBEMAIL>
+License: GPL-3
+  This package is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+
+  This package is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this package; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+  On Debian systems, the complete text of the GNU General
+  Public License can be found in \`/usr/share/common-licenses/GPL-3'.
+END
+
+	echo 9 > debian/compat
+	chmod +x debian/rules
+	dpkg-buildpackage -b -nc -us -uc
+	cd ..
+	log "Cleaning up debian package"
+	touch ${STAMPS}/summon-arm-toolchain_deb.build
+	rm -rf deb
 fi
 fi
