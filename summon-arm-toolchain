@@ -442,14 +442,19 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Adding libgloss symlink to gcc"
     ln -f -s `pwd`/${NEWLIB}/libgloss ${GCC}
 
-    if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
-	log "Patching gcc to add multilib support"
-	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-  patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
-	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
-	cd ..
-    fi
+	if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
+		log "Patching gcc to add multilib support"
+		cd ${GCC}
+		if [ ${USE_LINARO} == 1 ]; then
+			patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+			patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
+			patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+		else
+			patch -p0 -i ../patches/patch-gcc-vanilla-config-arm-t-arm-elf.diff
+			patch -p0 -i ../patches/patch-libgcc-vanilla-divide-exceptions.diff
+		cd ..
+	fi
+	fi
 
     cd build
     if [ "X${GCC_CC}" != "X" ] ; then
