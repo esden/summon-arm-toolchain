@@ -43,6 +43,8 @@ DEFAULT_TO_CORTEX_M3=0
 CPUS=
 # Set to 1 to generate .deb package
 DEB=0
+DEB_PACKAGE_NAME=sat
+DEB_CLEAN=1	#Cleaning up after building package
 
 ##############################################################################
 # Parsing command line parameters
@@ -89,6 +91,9 @@ while [ $# -gt 0 ]; do
 		DEB=*)
 		DEB=$(echo $1 | sed 's,^DEB=,,')
 		;;
+		DEB_CLEAN=*)
+		DEB_CLEAN=$(echo $1 | sed 's,^DEB_CLEAN=,,')
+		;;
 		*)
 		echo "Unknown parameter: $1"
 		exit 1
@@ -97,10 +102,6 @@ while [ $# -gt 0 ]; do
 
 	shift # shifting parameter list to access the next one
 done
-
-if [ ${DEB} == 1 ] ; then
-	PREFIX=/usr/local
-fi
 
 echo "Settings used for this build are:"
 echo "TARGET=$TARGET"
@@ -130,6 +131,7 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
+	DEB_PACKAGE_NAME=${DEB_PACKAGE_NAME}-linaro
 	# For Linaro GCC:
 	GCCRELEASE=4.6-2011.10
 	GCCVERSION=4.6-2011.10
@@ -208,6 +210,16 @@ fi
 
 export PATH="${DESTDIR}${PREFIX}/bin:${PATH}"
 
+if [ ${DEB} == 1 ] ; then
+	if [ "x${DEBFULLNAME}" == "x" ]; then
+		echo 'You need set DEBFULLNAME var env, e.g. export DEBFULLNAME="Foo bar"'
+		exit -1
+	fi
+	if [ "x${DEBEMAIL}" == "x" ]; then
+		echo 'You need set DEBEMAIL var env, e.g. export DEBEMAIL="foo@bar.org"'
+		exit -1
+	fi
+fi
 
 ##############################################################################
 # Tool section
@@ -589,32 +601,57 @@ fi
 fi
 
 if [ ${DEB} == 1 ] ; then
-if [ ! -e ${STAMPS}/summon-arm-toolchain_deb.build ]; then
+if [ ! -e ${STAMPS}/${DEB_PACKAGE_NAME}_deb.build ]; then
 	cd ${SUMMON_DIR}/deb
 	log "Building debian package"
+	find debian/tmp -name "libiberty.a" -exec rm -fv \{\} \;
+	rm -rfv debian/tmp/${PREFIX}/share/locale
+	rm -rfv debian/tmp/${PREFIX}/share/info
+	rm -rfv debian/tmp/${PREFIX}/share/man/man7
+	rm -rfv debian/tmp/${PREFIX}/share/gdb
+	find debian/tmp -type d -empty -delete
+	DEB_DESCRIPTION=""
+	if [ ${OOCD_EN} == 1 ]; then
+		DEB_DESCRIPTION+="${OOCD},
+ "
+	fi
+	if [ ${LIBOPENCM3_EN} == 1 ]; then
+		DEB_DESCRIPTION+="${LIBOPENCM3},
+ "
+	fi
+	if [ ${LIBSTM32_EN} == 1 ]; then
+		DEB_DESCRIPTION+="${LIBSTM32},
+ "
+	fi
+	DEB_DESCRIPTION+="${BINUTILS},
+ ${GCC},
+ ${NEWLIB} and
+ ${GDB}"
 	# Debian control
 	cat > debian/control << END
-Source: summon-arm-toolchain
+Source: ${DEB_PACKAGE_NAME}
 Section: devel
 Maintainer: $DEBFULLNAME <$DEBEMAIL>
-Build-Depends: debhelper (>= 9), cdbs
+Build-Depends: debhelper (>= 8), cdbs
 Priority: optional
 Standards-Version: 3.9.3
+HomePage: https://github.com/esden/summon-arm-toolchain/wiki
 
-Package: summon-arm-toolchain
+Package: ${DEB_PACKAGE_NAME}
 Architecture: any
 Depends: \${shlibs:Depends}, \${misc:Depends}
-Description: A toolchain for bare bone ARM processors
- Is composed by $BINUTILS, $GCC and $GDB.
+Description: Toolchain for bare bone ARM processors
+ Is composed by
+ ${DEB_DESCRIPTION}.
 
 END
 	# Empty changelog
 	debchange\
 		--distribution unstable\
 		--create\
-		--empty\
-		--package summon-arm-toolchain\
-		--newversion 0.1-1
+		--package ${DEB_PACKAGE_NAME}\
+		--newversion 0.1-$(git rev-parse HEAD)\
+		"Package \"automagically\" builded"
 	# Debian rules
 	cat > debian/rules << END
 #!/usr/bin/make -f
@@ -628,14 +665,20 @@ override_dh_testdir:
 override_dh_auto_configure:
 override_dh_auto_build:
 override_dh_auto_test:
+
+override_dh_strip:
+	find debian/ -name '*.a' -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
+	find debian/ -name "*/bin/*" -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
+
 override_dh_prep:
-	rm -f debian/summon-arm-toolchain.substvars
-	rm -f debian/summon-arm-toolchain.*.debhelper
-	rm -rf debian/summon-arm-toolchain/
+	rm -f debian/${DEB_PACKAGE_NAME}.substvars
+	rm -f debian/${DEB_PACKAGE_NAME}*debhelper
+	rm -f debian/${DEB_PACKAGE_NAME}*post*
+	rm -rf debian/${DEB_PACKAGE_NAME}/
 END
 	# Debian magic install
-	cat > debian/summon-arm-toolchain.install << END
-debian/tmp/usr/local /usr/
+	cat > debian/${DEB_PACKAGE_NAME}.install << END
+debian/tmp/${PREFIX}/* ${PREFIX}
 END
 
 	cat > debian/copyright << END
@@ -660,12 +703,14 @@ License: GPL-3
   Public License can be found in \`/usr/share/common-licenses/GPL-3'.
 END
 
-	echo 9 > debian/compat
+	echo 8 > debian/compat
 	chmod +x debian/rules
 	dpkg-buildpackage -b -nc -us -uc
 	cd ..
-	log "Cleaning up debian package"
-	touch ${STAMPS}/summon-arm-toolchain_deb.build
-	rm -rf deb
+	touch ${STAMPS}/${DEB_PACKAGE_NAME}_deb.build
+	if [ ${DEB_CLEAN} == 1 ]; then
+		log "Cleaning up debian package"
+		rm -rf deb
+	fi
 fi
 fi
