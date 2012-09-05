@@ -122,12 +122,12 @@ echo "CPUS=$CPUS"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.5.2
+	GCCVERSION=4.7.1
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 
 	# For FSF GDB:
-	GDBVERSION=7.3.1
+	GDBVERSION=7.5
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
@@ -145,8 +145,8 @@ else
 	GDBURL=http://launchpad.net/gdb-linaro/7.3/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
-BINUTILS=binutils-2.21.1
-NEWLIB=newlib-1.19.0
+BINUTILS=binutils-2.22
+NEWLIB=newlib-1.20.0
 OOCD=openocd-0.6.0-rc1
 OOCD_GIT=
 LIBCMSIS=
