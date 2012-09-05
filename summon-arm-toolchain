@@ -672,8 +672,8 @@ override_dh_auto_build:
 override_dh_auto_test:
 
 override_dh_strip:
-	find debian/ -name '*.a' -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
-	find debian/ -name "*/bin/*" -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
+	dh_strip -X.a -X.o
+	find debian/ -name '*.a*' -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
 
 override_dh_prep:
 	rm -f debian/${DEB_PACKAGE_NAME}.substvars
