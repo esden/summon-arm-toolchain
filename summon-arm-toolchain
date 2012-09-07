@@ -565,8 +565,8 @@ if [ ! -e ${STAMPS}/${LIBOPENCM3}.build ]; then
     unpack ${LIBOPENCM3}
     cd ${LIBOPENCM3}
     log "Building ${LIBOPENCM3}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX}
-    install ${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${PREFIX} install
+    make PREFIX=${TARGET} DESTDIR=${DESTDIR}${DESTDIR:+/}${PREFIX}
+    install ${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${DESTDIR}${DESTDIR:+/}${PREFIX} install
     cd ..
     log "Cleaning up ${LIBOPENCM3}"
     touch ${STAMPS}/${LIBOPENCM3}.build
