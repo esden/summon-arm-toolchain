@@ -447,13 +447,13 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 		cd ${GCC}
 		if [ ${USE_LINARO} == 1 ]; then
 			patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-			patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
+			patch -p0 -i ../patches/patch-gcc-gengtype-fix.diff
 			patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
 		else
 			patch -p0 -i ../patches/patch-gcc-vanilla-config-arm-t-arm-elf.diff
 			patch -p0 -i ../patches/patch-libgcc-vanilla-divide-exceptions.diff
+		fi
 		cd ..
-	fi
 	fi
 
     cd build
@@ -677,8 +677,9 @@ override_dh_strip:
 
 override_dh_prep:
 	rm -f debian/${DEB_PACKAGE_NAME}.substvars
-	rm -f debian/${DEB_PACKAGE_NAME}*debhelper
+	rm -f debian/${DEB_PACKAGE_NAME}*debhelper*
 	rm -f debian/${DEB_PACKAGE_NAME}*post*
+	rm -f debian/files
 	rm -rf debian/${DEB_PACKAGE_NAME}/
 END
 	# Debian magic install
