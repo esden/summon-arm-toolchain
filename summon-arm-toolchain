@@ -131,7 +131,6 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
-	DEB_PACKAGE_NAME=${DEB_PACKAGE_NAME}-linaro
 	# For Linaro GCC:
 	GCCRELEASE=4.6-2011.10
 	GCCVERSION=4.6-2011.10
@@ -606,6 +605,14 @@ fi
 fi
 
 if [ ${DEB} == 1 ] ; then
+	DEB_CONFLICTS=""
+	if [ ${USE_LINARO} == 0 ] ; then
+		DEB_CONFLICTS=$DEB_PACKAGE_NAME-linaro
+		DEB_PACKAGE_NAME=$DEB_PACKAGE_NAME
+	else
+		DEB_CONFLICTS=$DEB_PACKAGE_NAME
+		DEB_PACKAGE_NAME=$DEB_PACKAGE_NAME-linaro
+	fi
 if [ ! -e ${STAMPS}/${DEB_PACKAGE_NAME}_deb.build ]; then
 	cd ${SUMMON_DIR}/deb
 	log "Building debian package"
@@ -645,6 +652,7 @@ HomePage: https://github.com/esden/summon-arm-toolchain/wiki
 Package: ${DEB_PACKAGE_NAME}
 Architecture: any
 Depends: \${shlibs:Depends}, \${misc:Depends}
+Conflicts: $DEB_CONFLICTS
 Description: Toolchain for bare bone ARM processors
  Is composed by
  ${DEB_DESCRIPTION}.
@@ -655,7 +663,7 @@ END
 		--distribution unstable\
 		--create\
 		--package ${DEB_PACKAGE_NAME}\
-		--newversion 0.1-$(git rev-parse HEAD)\
+		--newversion $(date '+%Y%m%d')-$(git describe --always)\
 		"Package \"automagically\" builded"
 	# Debian rules
 	cat > debian/rules << END
@@ -673,7 +681,7 @@ override_dh_auto_test:
 
 override_dh_strip:
 	dh_strip -X.a -X.o
-	find debian/ -name '*.a*' -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
+	find debian/ -name '*.a' -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
 
 override_dh_prep:
 	rm -f debian/${DEB_PACKAGE_NAME}.substvars
