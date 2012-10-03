@@ -138,7 +138,7 @@ Notes for Linux users:
 You need to install several packages. On Debian just run:
 
   $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-    libmpc-dev autoconf texinfo build-essential libftdi-dev zlib1g-dev
+    libmpc-dev autoconf texinfo build-essential libftdi-dev zlib1g-dev git
 
 You may want to try running the following command instead too:
 
