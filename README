@@ -24,6 +24,10 @@ To compile the ARM toolchain for barebone ARM devices:
 * ./summon-arm-toolchain
 * Profit
 
+To download a debian package of the ARM toolchain for barebone ARM devices:
+===========================================================================
+Visit the url http://sat.debian.org.ar where you'll find the installation steps.
+
 Command line options
 ====================
 

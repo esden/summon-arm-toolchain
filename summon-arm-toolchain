@@ -45,6 +45,7 @@ CPUS=
 DEB=0
 DEB_PACKAGE_NAME=sat
 DEB_CLEAN=1	#Cleaning up after building package
+DEB_DIST=unstable
 
 ##############################################################################
 # Parsing command line parameters
@@ -94,6 +95,9 @@ while [ $# -gt 0 ]; do
 		DEB_CLEAN=*)
 		DEB_CLEAN=$(echo $1 | sed 's,^DEB_CLEAN=,,')
 		;;
+		DEB_DIST=*)
+		DEB_DIST=$(echo $1 | sed 's,^DEB_DIST=,,')
+		;;
 		*)
 		echo "Unknown parameter: $1"
 		exit 1
@@ -132,8 +136,8 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.7-2012.09
-	GCCVERSION=4.7-2012.09
+	GCCRELEASE=4.7-2012.10
+	GCCVERSION=4.7-2012.10
 	GCC=gcc-linaro-${GCCVERSION}
 	GCCURL=http://launchpad.net/gcc-linaro/4.7/${GCCRELEASE}/+download/${GCC}.tar.bz2
 
@@ -266,7 +270,7 @@ esac
 function fetch {
     if [ ! -e ${STAMPS}/$1.fetch ]; then
         log "Downloading $1 sources..."
-        wget -c --no-passive-ftp --no-check-certificate $2 && touch ${STAMPS}/$1.fetch
+        wget -c --no-check-certificate $2 && touch ${STAMPS}/$1.fetch
     fi
 }
 
@@ -344,7 +348,12 @@ function unpack {
 # Install a build
 function install {
     log $1
+    MAKEFLAGS_TMP=${MAKEFLAGS}
+    if [ $2 == "install" ]; then
+        MAKEFLAGS=$(echo ${MAKEFLAGS} | sed -r 's@-j[0-9]+\s?@@g')
+    fi
     ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8 DESTDIR=${DESTDIR}
+    MAKEFLAGS=${MAKEFLAGS_TMP}
 }
 
 
@@ -659,10 +668,10 @@ Description: Toolchain for bare bone ARM processors
 END
 	# Empty changelog
 	debchange\
-		--distribution unstable\
+		--distribution ${DEB_DIST}\
 		--create\
 		--package ${DEB_PACKAGE_NAME}\
-		--newversion $(date '+%Y%m%d')-$(git describe --always)\
+		--newversion $(date '+%Y%m%d')-$(git describe --always)-${DEB_DIST}\
 		"Package \"automagically\" builded"
 	# Debian rules
 	cat > debian/rules << END
@@ -715,6 +724,19 @@ License: GPL-3
   On Debian systems, the complete text of the GNU General
   Public License can be found in \`/usr/share/common-licenses/GPL-3'.
 END
+	cat > debian/tmp/usr/bin/${TARGET}-gdbtui << END
+#!/bin/sh
+
+prog=$(basename $0 tui)
+
+dir=$(dirname $0)
+if [ "$dir" != "." ]; then
+	   prog=$dir/$prog
+   fi
+
+   exec $prog --tui "$@"
+END
+	chmod +x debian/tmp/usr/bin/${TARGET}-gdbtui
 
 	echo 8 > debian/compat
 	chmod +x debian/rules
