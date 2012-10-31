@@ -372,7 +372,7 @@ if [ ${LIBOPENCM3_EN} != 0 ]; then
 		exit 1
 		#fetch ${LIBOPENCM3} http://.../${LIBOPENCM3}.tar.bz2
 	else
-		clone libopencm3 ${LIBOPENCM3_GIT} git://libopencm3.git.sourceforge.net/gitroot/libopencm3/libopencm3
+		clone libopencm3 ${LIBOPENCM3_GIT} git://github.com/libopencm3/libopencm3.git
 	fi
 fi
 
