@@ -42,6 +42,9 @@ DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
 CPUS=
 
+#	FTP options ... some environments do not support non-passive FTP
+# NO_PASSIVE="--no-passive-ftp "
+NO_CERTCEHCK="--no-check-certificate "
 ##############################################################################
 # Parsing command line parameters
 ##############################################################################
@@ -240,8 +243,10 @@ esac
 # Fetch a versioned file from a URL
 function fetch {
     if [ ! -e ${STAMPS}/$1.fetch ]; then
-        log "Downloading $1 sources..."
-        wget -c --no-passive-ftp --no-check-certificate $2 && touch ${STAMPS}/$1.fetch
+	[ ! -e $SOURCES/$1 ] && {
+	        log "Downloading $1 sources..."
+	        wget -c $NO_PASSIVE $NO_CERTCHECK $2 && touch ${STAMPS}/$1.fetch
+	}
     fi
 }
 
@@ -329,7 +334,7 @@ cd ${SOURCES}
 
 fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
-fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
+fetch ${NEWLIB} ftp://sourceware.org/pub/newlib/${NEWLIB}.tar.gz
 fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
