@@ -128,7 +128,9 @@ For Mac OS X there are a few dependencies which must be installed. The wget
 and libftdi packages are required and gmp, mpfr, mpc and libiconv are needed
 by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts or fink.
 
-  $ port install gmp mpfr libmpc wget libftdi
+  $ port install gmp mpfr libmpc wget libftdi git-core py27-yaml python_select
+
+
 
 For XML support in gdb you may want to install expat too. And add the 
 --with-expat parameter to the GDB target.
@@ -138,11 +140,12 @@ Notes for Linux users:
 You need to install several packages. On Debian just run:
 
   $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-    libmpc-dev autoconf texinfo build-essential libftdi-dev
+    libmpc-dev autoconf texinfo build-essential libftdi-dev zlib1g-dev \
+    git zlib1g-dev python-yaml
 
 You may want to try running the following command instead too:
 
-  $ apt-get build-dep gcc-4.5
+  $ apt-get build-dep gcc-4.5 git zlib1g-dev python-yaml
 
 For XML support in gdb you may want to install libexpat1 and libexpat1-dev too. 
 
