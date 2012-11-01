@@ -329,7 +329,7 @@ cd ${SOURCES}
 
 fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
-fetch ${NEWLIB} ftp://sources.redhat.com/pub/newlib/${NEWLIB}.tar.gz
+fetch ${NEWLIB} ftp://sourceware.org/pub/newlib/${NEWLIB}.tar.gz
 fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
