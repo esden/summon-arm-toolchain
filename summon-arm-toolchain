@@ -350,7 +350,7 @@ function install {
     log $1
     MAKEFLAGS_TMP=${MAKEFLAGS}
     if [ $2 == "install" ]; then
-        MAKEFLAGS=$(echo ${MAKEFLAGS} | sed -r 's@-j[0-9]+\s?@@g')
+        MAKEFLAGS=$(echo ${MAKEFLAGS} | sed 's@-j[0-9]\+@@g')
     fi
     ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8 DESTDIR=${DESTDIR}
     MAKEFLAGS=${MAKEFLAGS_TMP}
