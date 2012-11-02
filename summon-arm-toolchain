@@ -41,6 +41,11 @@ LIBOPENCM3_EN=1
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
 CPUS=
+# Set to 1 to generate .deb package
+DEB=0
+DEB_PACKAGE_NAME=sat
+DEB_CLEAN=1	#Cleaning up after building package
+DEB_DIST=unstable
 
 ##############################################################################
 # Parsing command line parameters
@@ -84,6 +89,15 @@ while [ $# -gt 0 ]; do
 		CPUS=*)
 		CPUS=$(echo $1 | sed 's,^CPUS=,,')
 		;;
+		DEB=*)
+		DEB=$(echo $1 | sed 's,^DEB=,,')
+		;;
+		DEB_CLEAN=*)
+		DEB_CLEAN=$(echo $1 | sed 's,^DEB_CLEAN=,,')
+		;;
+		DEB_DIST=*)
+		DEB_DIST=$(echo $1 | sed 's,^DEB_DIST=,,')
+		;;
 		*)
 		echo "Unknown parameter: $1"
 		exit 1
@@ -112,30 +126,30 @@ echo "CPUS=$CPUS"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.5.2
+	GCCVERSION=4.7.1
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 
 	# For FSF GDB:
-	GDBVERSION=7.3.1
+	GDBVERSION=7.5
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.6-2011.10
-	GCCVERSION=4.6-2011.10
+	GCCRELEASE=4.7-2012.10
+	GCCVERSION=4.7-2012.10
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.6/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/4.7/${GCCRELEASE}/+download/${GCC}.tar.bz2
 
 	# For Linaro GDB:
-	GDBRELEASE=7.3-2011.10
-	GDBVERSION=7.3-2011.10
+	GDBRELEASE=7.5-2012.09
+	GDBVERSION=7.5-2012.09
 	GDB=gdb-linaro-${GDBVERSION}
-	GDBURL=http://launchpad.net/gdb-linaro/7.3/${GDBRELEASE}/+download/${GDB}.tar.bz2
+	GDBURL=http://launchpad.net/gdb-linaro/7.5/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
-BINUTILS=binutils-2.21.1
-NEWLIB=newlib-1.19.0
+BINUTILS=binutils-2.22
+NEWLIB=newlib-1.20.0
 OOCD=openocd-0.6.0-rc1
 OOCD_GIT=
 LIBCMSIS=
@@ -188,12 +202,27 @@ if [ ${QUIET} != 0 ]; then
     MAKEFLAGS="${MAKEFLAGS} -s"
 fi
 
-export PATH="${PREFIX}/bin:${PATH}"
-
 SUMMON_DIR=$(pwd)
 SOURCES=${SUMMON_DIR}/sources
 STAMPS=${SUMMON_DIR}/stamps
 
+if [ ${DEB} == 1 ] ; then
+	DESTDIR=${SUMMON_DIR}/deb/debian/tmp
+	SUDO=fakeroot
+fi
+
+export PATH="${DESTDIR}${PREFIX}/bin:${PATH}"
+
+if [ ${DEB} == 1 ] ; then
+	if [ "x${DEBFULLNAME}" == "x" ]; then
+		echo 'You need set DEBFULLNAME var env, e.g. export DEBFULLNAME="Foo bar"'
+		exit -1
+	fi
+	if [ "x${DEBEMAIL}" == "x" ]; then
+		echo 'You need set DEBEMAIL var env, e.g. export DEBEMAIL="foo@bar.org"'
+		exit -1
+	fi
+fi
 
 ##############################################################################
 # Tool section
@@ -241,7 +270,7 @@ esac
 function fetch {
     if [ ! -e ${STAMPS}/$1.fetch ]; then
         log "Downloading $1 sources..."
-        wget -c --no-passive-ftp --no-check-certificate $2 && touch ${STAMPS}/$1.fetch
+        wget -c --no-check-certificate $2 && touch ${STAMPS}/$1.fetch
     fi
 }
 
@@ -319,7 +348,12 @@ function unpack {
 # Install a build
 function install {
     log $1
-    ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8
+    MAKEFLAGS_TMP=${MAKEFLAGS}
+    if [ $2 == "install" ]; then
+        MAKEFLAGS=$(echo ${MAKEFLAGS} | sed 's@-j[0-9]\+@@g')
+    fi
+    ${SUDO} make ${MAKEFLAGS} $2 $3 $4 $5 $6 $7 $8 DESTDIR=${DESTDIR}
+    MAKEFLAGS=${MAKEFLAGS_TMP}
 }
 
 
@@ -416,14 +450,18 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Adding libgloss symlink to gcc"
     ln -f -s `pwd`/${NEWLIB}/libgloss ${GCC}
 
-    if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
-	log "Patching gcc to add multilib support"
-	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-  patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
-	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
-	cd ..
-    fi
+	if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
+		log "Patching gcc to add multilib support"
+		cd ${GCC}
+		if [ ${USE_LINARO} == 1 ]; then
+			patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+			patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+		else
+			patch -p0 -i ../patches/patch-gcc-vanilla-config-arm-t-arm-elf.diff
+			patch -p0 -i ../patches/patch-libgcc-vanilla-divide-exceptions.diff
+		fi
+		cd ..
+	fi
 
     cd build
     if [ "X${GCC_CC}" != "X" ] ; then
@@ -565,11 +603,149 @@ if [ ! -e ${STAMPS}/${LIBOPENCM3}.build ]; then
     unpack ${LIBOPENCM3}
     cd ${LIBOPENCM3}
     log "Building ${LIBOPENCM3}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX}
-    install ${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${PREFIX} install
+    make PREFIX=${PREFIX}/${TARGET}
+    install ${LIBOPENCM3} PREFIX=${PREFIX}/${TARGET} install
     cd ..
     log "Cleaning up ${LIBOPENCM3}"
     touch ${STAMPS}/${LIBOPENCM3}.build
     rm -rf ${LIBOPENCM3}
+fi
+fi
+
+if [ ${DEB} == 1 ] ; then
+	DEB_CONFLICTS=""
+	if [ ${USE_LINARO} == 0 ] ; then
+		DEB_CONFLICTS=$DEB_PACKAGE_NAME-linaro
+		DEB_PACKAGE_NAME=$DEB_PACKAGE_NAME
+	else
+		DEB_CONFLICTS=$DEB_PACKAGE_NAME
+		DEB_PACKAGE_NAME=$DEB_PACKAGE_NAME-linaro
+	fi
+if [ ! -e ${STAMPS}/${DEB_PACKAGE_NAME}_deb.build ]; then
+	cd ${SUMMON_DIR}/deb
+	log "Building debian package"
+	find debian/tmp -name "libiberty.a" -exec rm -fv \{\} \;
+	rm -rfv debian/tmp/${PREFIX}/share/locale
+	rm -rfv debian/tmp/${PREFIX}/share/info
+	rm -rfv debian/tmp/${PREFIX}/share/man/man7
+	rm -rfv debian/tmp/${PREFIX}/share/gdb
+	find debian/tmp -type d -empty -delete
+	DEB_DESCRIPTION=""
+	if [ ${OOCD_EN} == 1 ]; then
+		DEB_DESCRIPTION+="${OOCD},
+ "
+	fi
+	if [ ${LIBOPENCM3_EN} == 1 ]; then
+		DEB_DESCRIPTION+="${LIBOPENCM3},
+ "
+	fi
+	if [ ${LIBSTM32_EN} == 1 ]; then
+		DEB_DESCRIPTION+="${LIBSTM32},
+ "
+	fi
+	DEB_DESCRIPTION+="${BINUTILS},
+ ${GCC},
+ ${NEWLIB} and
+ ${GDB}"
+	# Debian control
+	cat > debian/control << END
+Source: ${DEB_PACKAGE_NAME}
+Section: devel
+Maintainer: $DEBFULLNAME <$DEBEMAIL>
+Build-Depends: debhelper (>= 8), cdbs
+Priority: optional
+Standards-Version: 3.9.3
+HomePage: https://github.com/esden/summon-arm-toolchain/wiki
+
+Package: ${DEB_PACKAGE_NAME}
+Architecture: any
+Depends: \${shlibs:Depends}, \${misc:Depends}
+Conflicts: $DEB_CONFLICTS
+Description: Toolchain for bare bone ARM processors
+ Is composed by
+ ${DEB_DESCRIPTION}.
+
+END
+	# Empty changelog
+	debchange\
+		--distribution ${DEB_DIST}\
+		--create\
+		--package ${DEB_PACKAGE_NAME}\
+		--newversion $(date '+%Y%m%d')-$(git describe --always)-${DEB_DIST}\
+		"Package \"automagically\" builded"
+	# Debian rules
+	cat > debian/rules << END
+#!/usr/bin/make -f
+#export DH_VERBOSE=1
+
+%:
+	dh \$@
+
+override_dh_usrlocal:
+override_dh_testdir:
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+
+override_dh_strip:
+	dh_strip -X.a -X.o
+	find debian/ -name '*.a' -type f -exec debian/tmp/${PREFIX}/${TARGET}/bin/strip -I ${TARGET} --strip-debug \{\} \;
+
+override_dh_prep:
+	rm -f debian/${DEB_PACKAGE_NAME}.substvars
+	rm -f debian/${DEB_PACKAGE_NAME}*debhelper*
+	rm -f debian/${DEB_PACKAGE_NAME}*post*
+	rm -f debian/files
+	rm -rf debian/${DEB_PACKAGE_NAME}/
+END
+	# Debian magic install
+	cat > debian/${DEB_PACKAGE_NAME}.install << END
+debian/tmp/${PREFIX}/* ${PREFIX}
+END
+
+	cat > debian/copyright << END
+Files: debian/*
+Copyright: (C) 2012 $DEBFULLNAME <$DEBEMAIL>
+License: GPL-3
+  This package is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+
+  This package is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this package; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+  On Debian systems, the complete text of the GNU General
+  Public License can be found in \`/usr/share/common-licenses/GPL-3'.
+END
+	cat > debian/tmp/usr/bin/${TARGET}-gdbtui << END
+#!/bin/sh
+
+prog=$(basename $0 tui)
+
+dir=$(dirname $0)
+if [ "$dir" != "." ]; then
+	   prog=$dir/$prog
+   fi
+
+   exec $prog --tui "$@"
+END
+	chmod +x debian/tmp/usr/bin/${TARGET}-gdbtui
+
+	echo 8 > debian/compat
+	chmod +x debian/rules
+	dpkg-buildpackage -b -nc -us -uc
+	cd ..
+	touch ${STAMPS}/${DEB_PACKAGE_NAME}_deb.build
+	if [ ${DEB_CLEAN} == 1 ]; then
+		log "Cleaning up debian package"
+		rm -rf deb
+	fi
 fi
 fi
