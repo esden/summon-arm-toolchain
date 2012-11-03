@@ -136,7 +136,7 @@ fi
 
 BINUTILS=binutils-2.21.1
 NEWLIB=newlib-1.19.0
-OOCD=openocd-0.6.0-rc1
+OOCD=openocd-0.6.1
 OOCD_GIT=
 LIBCMSIS=
 LIBCMSIS_GIT=v1.10-3
@@ -334,7 +334,7 @@ fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
 	if [ "x${OOCD_GIT}" == "x" ]; then
-		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.0-rc1/${OOCD}.tar.bz2
+		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.1/${OOCD}.tar.bz2
 	else
 		clone oocd ${OOCD_GIT} git://openocd.git.sourceforge.net/gitroot/openocd/openocd ./bootstrap
 	fi
@@ -489,10 +489,10 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/${OOCD}.build ]; then
     unpack ${OOCD}
-    #log "Patching openocd to support arm7m registers"
-    #cd ${OOCD}
-    #patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
-    #cd ..
+    log "Patching openocd to support arm7m registers"
+    cd ${OOCD}
+    patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
+    cd ..
     cd build
     log "Configuring openocd-${OOCD}"
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
@@ -511,7 +511,8 @@ if [ ! -e ${STAMPS}/${OOCD}.build ]; then
 				 --enable-jlink \
 				 --enable-vsllink \
 				 --enable-rlink \
-				 --enable-arm-jtag-ew
+				 --enable-arm-jtag-ew \
+				 --enable-stlink
     log "Building ${OOCD}"
     make ${MAKEFLAGS}
     install ${OOCD} install
