@@ -28,6 +28,18 @@ SUDO=
 QUIET=0
 # Set to 1 to use linaro gcc instead of the FSF gcc
 USE_LINARO=1
+# Set to the release date of the Linaro GCC project
+LINARO_GCC_RELEASE_DATE=2012.11
+# Set to the release version of the Linaro GCC project
+LINARO_GCC_VERSION=4.6
+# Set to the release date of the Linaro GDB project
+LINARO_GDB_RELEASE_DATE=2012.09
+# Set to the release version of the Linaro GDB project
+LINARO_GDB_VERSION=7.5
+# Set to the release version of the FSF GCC project
+FSF_GCC_VERSION=4.6.3
+# Set to the release version of the FSF GDB project
+FSF_GDB_VERSION=7.5.1
 # Set to 1 to enable building of OpenOCD
 OOCD_EN=1
 # Set to 'master' or a git revision number to use instead of stable version
@@ -66,6 +78,24 @@ while [ $# -gt 0 ]; do
 		USE_LINARO=*)
 		USE_LINARO=$(echo $1 | sed 's,^USE_LINARO=,,')
 		;;
+                LINARO_GCC_RELEASE_DATE=*)
+                LINARO_GCC_RELEASE_DATE=$(echo $1 | sed 's,^LINARO_GCC_RELEASE_DATE=,,')
+                ;;
+                LINARO_GCC_VERSION=*)
+                LINARO_GCC_VERSION=$(echo $1 | sed 's,^LINARO_GCC_VERSION=,,')
+                ;;
+                LINARO_GDB_RELEASE_DATE=*)
+                LINARO_GDB_RELEASE_DATE=$(echo $1 | sed 's,^LINARO_GDB_RELEASE_DATE=,,')
+                ;;
+                LINARO_GDB_VERSION=*)
+                LINARO_GDB_VERSION=$(echo $1 | sed 's,^LINARO_GDB_VERSION=,,')
+                ;;
+                FSF_GCC_VERSION=*)
+                FSF_GCC_VERSION=$(echo $1 | sed 's,^FSF_GCC_VERSION=,,')
+                ;;
+                FSF_GDB_VERSION=*)
+                FSF_GDB_VERSION=$(echo $1 | sed 's,^FSF_GDB_VERSION=,,')
+		;;
 		OOCD_EN=*)
 		OOCD_EN=$(echo $1 | sed 's,^OOCD_EN=,,')
 		;;
@@ -100,6 +130,12 @@ echo "DARWIN_OPT_PATH=$DARWIN_OPT_PATH"
 echo "SUDO=$SUDO"
 echo "QUIET=$QUIET"
 echo "USE_LINARO=$USE_LINARO"
+echo "LINARO_GCC_RELEASE_DATE=$LINARO_GCC_RELEASE_DATE"
+echo "LINARO_GCC_VERSION=$LINARO_GCC_VERSION"
+echo "LINARO_GDB_RELEASE_DATE=$LINARO_GDB_RELEASE_DATE"
+echo "LINARO_GDB_VERSION=$LINARO_GDB_VERSION"
+echo "FSF_GCC_VERSION=$FSF_GCC_VERSION"
+echo "FSF_GDB_VERSION=$FSF_GDB_VERSION"
 echo "OOCD_EN=$OOCD_EN"
 echo "OOCD_GIT=$OOCD_GIT"
 echo "LIBSTM32_EN=$LIBSTM32_EN"
@@ -112,31 +148,35 @@ echo "CPUS=$CPUS"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.5.2
+	GCCRELEASE=${FSF_GCC_VERSION}
+	GCCVERSION=${FSF_GCC_VERSION}
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 
 	# For FSF GDB:
-	GDBVERSION=7.3.1
+	GDBRELEASE=${FSF_GDB_VERSION}
+	GDBVERSION=${FSF_GDB_VERSION}
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.6-2011.10
-	GCCVERSION=4.6-2011.10
+	GCCRELEASE=${LINARO_GCC_VERSION}-${LINARO_GCC_RELEASE_DATE}
+	GCCVERSION=${LINARO_GCC_VERSION}-${LINARO_GCC_RELEASE_DATE}
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.6/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/${LINARO_GCC_VERSION}/${GCCRELEASE}/+download/${GCC}.tar.bz2
 
 	# For Linaro GDB:
-	GDBRELEASE=7.3-2011.10
-	GDBVERSION=7.3-2011.10
+	GDBRELEASE=${LINARO_GDB_VERSION}-${LINARO_GDB_RELEASE_DATE}
+	GDBVERSION=${LINARO_GDB_VERSION}-${LINARO_GDB_RELEASE_DATE}
 	GDB=gdb-linaro-${GDBVERSION}
-	GDBURL=http://launchpad.net/gdb-linaro/7.3/${GDBRELEASE}/+download/${GDB}.tar.bz2
+	GDBURL=http://launchpad.net/gdb-linaro/${LINARO_GDB_VERSION}/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
-BINUTILS=binutils-2.21.1
-NEWLIB=newlib-1.19.0
-OOCD=openocd-0.6.0-rc1
+BINUTILS=binutils-2.23.1
+BINUTILS_VERSION=2.23.1
+NEWLIB=newlib-1.20.0
+OOCD=openocd-0.6.1
+OOCD_VERSION=0.6.1
 OOCD_GIT=
 LIBCMSIS=
 LIBCMSIS_GIT=v1.10-3
@@ -334,7 +374,7 @@ fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
 	if [ "x${OOCD_GIT}" == "x" ]; then
-		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.0-rc1/${OOCD}.tar.bz2
+		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/${OOCD_VERSION}/${OOCD}.tar.bz2
 	else
 		clone oocd ${OOCD_GIT} git://openocd.git.sourceforge.net/gitroot/openocd/openocd ./bootstrap
 	fi
@@ -384,9 +424,15 @@ fi
 
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
-    log "Patching binutils to allow SVC support on cortex-m3"
+    log "Patching binutils to allow SVC support"
     cd ${BINUTILS}
-    patch -p1 -i ../patches/patch-binutils-2.21.1-svc-cortexm3.diff
+    if [ -e ../patches/patch-binutils-${BINUTILS_VERSION}-svc.diff ]; then
+       log "with file ../patches/patch-binutils-${BINUTILS_VERSION}-svc.diff"
+       patch -p1 -i ../patches/patch-binutils-${BINUTILS_VERSION}-svc.diff
+    else
+       log "with file ../patches/patch-binutils-${BINUTILS_VERSION}-svc-cortexm3.diff"
+       patch -p1 -i ../patches/patch-binutils-${BINUTILS_VERSION}-svc-cortexm3.diff
+    fi
     cd ..
     cd build
     log "Configuring ${BINUTILS}"
@@ -416,12 +462,18 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     log "Adding libgloss symlink to gcc"
     ln -f -s `pwd`/${NEWLIB}/libgloss ${GCC}
 
-    if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
+    if [ ${DEFAULT_TO_CORTEX_M3} == 0 ]; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-  patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
-	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+
+        if [ ${USE_LINARO} != 0 ]; then
+          if [ -e "../patches/patch-gcc-linaro-${GCCRELEASE}.diff" ]; then
+              patch -p1 -i ../patches/patch-gcc-linaro-${GCCRELEASE}.diff
+          fi
+        else
+	    patch -p1 -i ../patches/patch-gcc-${GCCRELEASE}.diff
+	fi
+
 	cd ..
     fi
 
@@ -451,6 +503,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
                       --disable-werror \
 		      --with-system-zlib \
 		      --disable-newlib-supplied-syscalls \
+		      --with-extra-multilibs=armv6-m,armv7-m,armv7e-m \
 		      ${GCCFLAGS}
     log "Building ${GCC} and ${NEWLIB}"
     make ${MAKEFLAGS}

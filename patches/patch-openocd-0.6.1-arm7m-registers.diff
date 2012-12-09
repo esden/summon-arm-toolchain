@@ -1,0 +1,90 @@
+diff -rupN orig/configure.ac new/configure.ac
+--- orig/configure.ac	2012-10-07 10:17:22.000000000 +0200
++++ new/configure.ac	2012-12-03 22:19:02.000000000 +0100
+@@ -2,6 +2,7 @@ AC_PREREQ(2.60)
+ AC_INIT([openocd], [0.6.1],
+   [OpenOCD Mailing List <openocd-devel@lists.sourceforge.net>])
+ AC_CONFIG_SRCDIR([src/openocd.c])
++AC_CONFIG_MACRO_DIR([m4])
+ 
+ m4_include([config_subdir.m4])dnl
+ 
+@@ -19,7 +20,7 @@ AC_LANG_C
+ AC_PROG_CC
+ AC_PROG_CC_C99
+ AM_PROG_CC_C_O
+-AC_PROG_RANLIB
++dnl AC_PROG_RANLIB
+ 
+ dnl disable checks for C++, Fortran and GNU Java Compiler
+ m4_defun([_LT_AC_LANG_CXX_CONFIG], [:])
+diff -rupN orig/Makefile.am new/Makefile.am
+--- orig/Makefile.am	2012-10-07 10:15:36.000000000 +0200
++++ new/Makefile.am	2012-12-03 22:17:36.000000000 +0100
+@@ -1,6 +1,7 @@
+ # not a GNU package. You can remove this line, if
+ # have all needed files, that a GNU package needs
+ AUTOMAKE_OPTIONS = gnu 1.6
++ACLOCAL_AMFLAGS = -I m4
+ 
+ # make sure we pass the correct jimtcl flags to distcheck
+ DISTCHECK_CONFIGURE_FLAGS = --disable-install-jim
+diff -rupN orig/src/target/armv7m.c new/src/target/armv7m.c
+--- orig/src/target/armv7m.c	2012-10-07 10:15:36.000000000 +0200
++++ new/src/target/armv7m.c	2012-12-03 22:27:35.000000000 +0100
+@@ -258,16 +258,13 @@ static int armv7m_write_core_reg(struct
+ 
+ /**
+  * Returns generic ARM userspace registers to GDB.
+- * GDB doesn't quite understand that most ARMs don't have floating point
+- * hardware, so this also fakes a set of long-obsolete FPA registers that
+- * are not used in EABI based software stacks.
+  */
+ int armv7m_get_gdb_reg_list(struct target *target, struct reg **reg_list[], int *reg_list_size)
+ {
+ 	struct armv7m_common *armv7m = target_to_armv7m(target);
+ 	int i;
+ 
+-	*reg_list_size = 26;
++	*reg_list_size = 17;
+ 	*reg_list = malloc(sizeof(struct reg *) * (*reg_list_size));
+ 
+ 	/*
+@@ -277,24 +274,9 @@ int armv7m_get_gdb_reg_list(struct targe
+ 	 *  - (obsolete) FPA status
+ 	 *  - CPSR
+ 	 */
+-	for (i = 0; i < 16; i++)
++	for (i = 0; i < 17; i++)
+ 		(*reg_list)[i] = &armv7m->core_cache->reg_list[i];
+ 
+-	for (i = 16; i < 24; i++)
+-		(*reg_list)[i] = &arm_gdb_dummy_fp_reg;
+-	(*reg_list)[24] = &arm_gdb_dummy_fps_reg;
+-
+-#ifdef ARMV7_GDB_HACKS
+-	/* use dummy cpsr reg otherwise gdb may try and set the thumb bit */
+-	(*reg_list)[25] = &armv7m_gdb_dummy_cpsr_reg;
+-
+-	/* ARMV7M is always in thumb mode, try to make GDB understand this
+-	 * if it does not support this arch */
+-	*((char *)armv7m->arm.pc->value) |= 1;
+-#else
+-	(*reg_list)[25] = &armv7m->core_cache->reg_list[ARMV7M_xPSR];
+-#endif
+-
+ 	return ERROR_OK;
+ }
+ 
+diff -rupN orig/src/target/armv7m.h new/src/target/armv7m.h
+--- orig/src/target/armv7m.h	2012-10-07 10:15:36.000000000 +0200
++++ new/src/target/armv7m.h	2012-12-03 22:27:58.000000000 +0100
+@@ -31,7 +31,7 @@
+ #include "arm.h"
+ 
+ /* define for enabling armv7 gdb workarounds */
+-#if 1
++#if 0
+ #define ARMV7_GDB_HACKS
+ #endif
+ 
