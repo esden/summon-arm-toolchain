@@ -1,0 +1,309 @@
+diff -rupN orig/gcc/config/arm/t-arm-elf new/gcc/config/arm/t-arm-elf
+--- orig/gcc/config/arm/t-arm-elf	2012-09-12 02:23:27.000000000 +0200
++++ new/gcc/config/arm/t-arm-elf	2012-12-08 18:14:43.000000000 +0100
+@@ -53,9 +53,11 @@ MULTILIB_MATCHES     =
+ # Not quite true.  We can support hard-vfp calling in Thumb2, but how do we
+ # express that here?  Also, we really need architecture v5e or later
+ # (mcrr etc).
+-MULTILIB_OPTIONS       += mfloat-abi=hard
+-MULTILIB_DIRNAMES      += fpu
+-MULTILIB_EXCEPTIONS    += *mthumb/*mfloat-abi=hard*
++MULTILIB_OPTIONS       += mfloat-abi=hard/mfloat-abi=softfp
++MULTILIB_DIRNAMES      += fpu softfp
++MULTILIB_EXCEPTIONS    += mthumb/mfloat-abi=hard mthumb/mfloat-abi=softfp
++MULTILIB_EXCEPTIONS    += marm/mfloat-abi=softfp mfloat-abi=softfp
++MULTILIB_OSDIRNAMES    += mfloat-abi.hard=!fpu marm/mfloat-abi.hard=!arm/fpu
+ #MULTILIB_EXCEPTIONS    += *mcpu=fa526/*mfloat-abi=hard*
+ #MULTILIB_EXCEPTIONS    += *mcpu=fa626/*mfloat-abi=hard*
+ 
+diff -rupN orig/gcc/config/arm/t-armv6-m new/gcc/config/arm/t-armv6-m
+--- orig/gcc/config/arm/t-armv6-m	1970-01-01 01:00:00.000000000 +0100
++++ new/gcc/config/arm/t-armv6-m	2012-12-06 23:10:38.000000000 +0100
+@@ -0,0 +1,33 @@
++#Build below library for ARM armv6-m architecture.
++#  armv6-m/    -mthumb -march=armv6-m
++
++MULTILIB_OPTIONS      += march=armv6-m
++
++MULTILIB_DIRNAMES     += armv6-m
++
++MULTILIB_EXCEPTIONS   += *march=armv6-m*/mfpu*
++MULTILIB_EXCEPTIONS   += *mfloat-abi*/march=armv6-m*
++MULTILIB_EXCEPTIONS   += march=armv6-m*
++MULTILIB_EXCEPTIONS   += marm*/march=armv6-m*
++
++# Common exceptions.
++MULTILIB_EXCEPTIONS   += *march=armv7e-m*/mfpu=vfpv3-d16*
++MULTILIB_EXCEPTIONS   += *mfpu*/mfpu*
++MULTILIB_EXCEPTIONS   += *march*/march*
++MULTILIB_EXCEPTIONS   += march*/mfpu*
++MULTILIB_EXCEPTIONS   += marm/mfpu*
++MULTILIB_EXCEPTIONS   += mcpu*/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/march*/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfpu*
++
++MULTILIB_MATCHES      += march?armv6-m=march?armv6-m
++MULTILIB_MATCHES      += march?armv6-m=mcpu?cortex-m0
++MULTILIB_MATCHES      += march?armv6-m=mcpu?cortex-m0plus
++MULTILIB_MATCHES      += march?armv6-m=mcpu?cortex-m1
++
++MULTILIB_OSDIRNAMES   += mthumb/march.armv6-m=!armv6-m
+diff -rupN orig/gcc/config/arm/t-armv7e-m new/gcc/config/arm/t-armv7e-m
+--- orig/gcc/config/arm/t-armv7e-m	1970-01-01 01:00:00.000000000 +0100
++++ new/gcc/config/arm/t-armv7e-m	2012-03-13 05:27:36.000000000 +0100
+@@ -0,0 +1,32 @@
++#Build below library for ARM armv7e-m architecture.
++#  armv7e-m/     -mthumb -march=armv7e-m
++
++MULTILIB_OPTIONS      += march=armv7e-m mfpu=fpv4-sp-d16
++
++MULTILIB_DIRNAMES     += armv7e-m fpv4-sp-d16
++
++MULTILIB_EXCEPTIONS   += march=armv7e-m*
++MULTILIB_EXCEPTIONS   += marm*/march=armv7e-m*
++MULTILIB_EXCEPTIONS   += mfloat-abi*/march=armv7e-m*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi*/march=armv7e-m
++
++# Common exceptions.
++MULTILIB_EXCEPTIONS   += *march=armv7e-m*/mfpu=vfpv3-d16*
++MULTILIB_EXCEPTIONS   += *mfpu*/mfpu*
++MULTILIB_EXCEPTIONS   += *march*/march*
++MULTILIB_EXCEPTIONS   += march*/mfpu*
++MULTILIB_EXCEPTIONS   += marm/mfpu*
++MULTILIB_EXCEPTIONS   += mcpu*/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/march*/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfpu*
++
++MULTILIB_MATCHES      += march?armv7e-m=mcpu?cortex-m4
++
++MULTILIB_OSDIRNAMES   += mthumb/march.armv7e-m=!armv7e-m
++MULTILIB_OSDIRNAMES   += mthumb/mfloat-abi.hard/march.armv7e-m/mfpu.fpv4-sp-d16=!armv7e-m/fpu
++MULTILIB_OSDIRNAMES   += mthumb/mfloat-abi.softfp/march.armv7e-m/mfpu.fpv4-sp-d16=!armv7e-m/softfp
+diff -rupN orig/gcc/config/arm/t-armv7-m new/gcc/config/arm/t-armv7-m
+--- orig/gcc/config/arm/t-armv7-m	1970-01-01 01:00:00.000000000 +0100
++++ new/gcc/config/arm/t-armv7-m	2012-03-13 05:27:42.000000000 +0100
+@@ -0,0 +1,30 @@
++#Build below library for ARM armv7-m architecture.
++#  armv7-m/     -mthumb -march=armv7-m
++
++MULTILIB_OPTIONS      += march=armv7-m
++
++MULTILIB_DIRNAMES     += armv7-m
++
++MULTILIB_EXCEPTIONS   += march=armv7-m*
++MULTILIB_EXCEPTIONS   += *march=armv7-m*/mfpu*
++MULTILIB_EXCEPTIONS   += marm*/march=armv7-m*
++MULTILIB_EXCEPTIONS   += *mfloat-abi*/march=armv7-m*
++
++# Common exceptions.
++MULTILIB_EXCEPTIONS   += *march=armv7e-m*/mfpu=vfpv3-d16*
++MULTILIB_EXCEPTIONS   += *mfpu*/mfpu*
++MULTILIB_EXCEPTIONS   += *march*/march*
++MULTILIB_EXCEPTIONS   += march*/mfpu*
++MULTILIB_EXCEPTIONS   += marm/mfpu*
++MULTILIB_EXCEPTIONS   += mcpu*/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/march*/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfpu*
++
++MULTILIB_MATCHES      += march?armv7-m=mcpu?cortex-m3
++
++MULTILIB_OSDIRNAMES   += mthumb/march.armv7-m=!armv7-m
+diff -rupN orig/gcc/config/arm/t-armv7-r new/gcc/config/arm/t-armv7-r
+--- orig/gcc/config/arm/t-armv7-r	1970-01-01 01:00:00.000000000 +0100
++++ new/gcc/config/arm/t-armv7-r	2012-03-13 05:27:42.000000000 +0100
+@@ -0,0 +1,37 @@
++#Build below library for ARM armv7-r architecture.
++#  armv7-r/thumb     		-mthumb -march=armv7-r
++#  armv7-r/thumb/hard     	-mthumb -mfloat-abi=hard   -march=armv7-r -mfpu=vfpv3-d16
++#  armv7-r/thumb/softfp     	-mthumb -mfloat-abi=softfp -march=armv7-r -mfpu=vfpv3-d16
++
++MULTILIB_OPTIONS      += march=armv7-r mfpu=vfpv3-d16
++
++MULTILIB_DIRNAMES     += armv7-r vfpv3-d16
++
++MULTILIB_EXCEPTIONS   += march=armv7-r*
++MULTILIB_EXCEPTIONS   += marm*/march=armv7-r*
++MULTILIB_EXCEPTIONS   += mfloat-abi*/march=armv7-r*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi*/march=armv7-r
++MULTILIB_EXCEPTIONS   += mfloat-abi=softfp*/march=armv7-r*
++
++# Common exceptions.
++MULTILIB_EXCEPTIONS   += *march=armv7e-m*/mfpu=vfpv3-d16*
++MULTILIB_EXCEPTIONS   += *mfpu*/mfpu*
++MULTILIB_EXCEPTIONS   += *march*/march*
++MULTILIB_EXCEPTIONS   += march*/mfpu*
++MULTILIB_EXCEPTIONS   += marm/mfpu*
++MULTILIB_EXCEPTIONS   += mcpu*/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/march*/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=hard/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfloat-abi=softfp/mfpu*
++MULTILIB_EXCEPTIONS   += mthumb/mfpu*
++
++MULTILIB_MATCHES      += march?armv7-r=mcpu?cortex-r4
++MULTILIB_MATCHES      += march?armv7-r=mcpu?cortex-r4f
++MULTILIB_MATCHES      += march?armv7-r=mcpu?cortex-r5
++
++MULTILIB_OSDIRNAMES   += mthumb/march.armv7-r=!armv7-r/thumb
++MULTILIB_OSDIRNAMES   += mthumb/mfloat-abi.hard/march.armv7-r/mfpu.vfpv3-d16=!armv7-r/thumb/fpu
++MULTILIB_OSDIRNAMES   += mthumb/mfloat-abi.softfp/march.armv7-r/mfpu.vfpv3-d16=!armv7-r/thumb/softfp
+diff -rupN orig/gcc/config.gcc new/gcc/config.gcc
+--- orig/gcc/config.gcc	2012-09-12 02:23:27.000000000 +0200
++++ new/gcc/config.gcc	2012-12-07 23:18:00.000000000 +0100
+@@ -890,7 +890,33 @@ arm*-*-eabi* | arm*-*-symbianelf* )
+ 	arm*-*-eabi*)
+ 	  tm_file="$tm_file newlib-stdint.h"
+ 	  tmake_file="${tmake_file} arm/t-bpabi"
+-	  use_gcc_stdint=wrap
++	  arm_multilibs="${with_extra_multilibs}"
++	  if test $arm_multilibs != "default"; then
++		arm_multilibs=`echo $arm_multilibs | sed -e 's/,/ /g'`
++		for arm_multilib in ${arm_multilibs}; do
++		    case ${arm_multilib} in
++		    thumb1)
++			tmake_file="${tmake_file} arm/t-thumb1"
++			;;
++		    thumb2)
++			tmake_file="${tmake_file} arm/t-thumb2"
++			;;
++		    armv6-m)
++			tmake_file="${tmake_file} arm/t-armv6-m"
++			;;
++		    armv7-m)
++			tmake_file="${tmake_file} arm/t-armv7-m"
++			;;
++		    armv7e-m)
++			tmake_file="${tmake_file} arm/t-armv7e-m"
++			;;
++		    *)
++			echo "--with-extra-multilibs=${arm_multilib} not supported."
++			exit 1
++		    esac
++		done
++	  fi
++          use_gcc_stdint=wrap
+ 	  ;;
+ 	arm*-*-symbianelf*)
+ 	  tm_file="${tm_file} arm/symbian.h"
+diff -rupN orig/gcc/configure new/gcc/configure
+--- orig/gcc/configure	2012-09-12 02:23:27.000000000 +0200
++++ new/gcc/configure	2012-12-04 23:00:19.000000000 +0100
+@@ -1651,6 +1651,7 @@ Optional Packages:
+                           GCC `cat $srcdir/LINARO-VERSION`"
+   --with-bugurl=URL       Direct users to URL to report a bug
+   --with-multilib-list    Select multilibs (SH only)
++  --with-extra-multilibs  Select extra multilibs (ARM only)
+   --with-gnu-ld           assume the C compiler uses GNU ld default=no
+   --with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib
+   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
+@@ -7199,6 +7200,12 @@ else
+   with_multilib_list=default
+ fi
+ 
++# Check whether --with-extra-multilibs was given.
++if test "${with_extra_multilibs+set}" = set; then :
++  withval=$with_extra_multilibs; :
++else
++  with_extra_multilibs=default
++fi
+ 
+ # -------------------------
+ # Checks for other programs
+diff -rupN orig/gcc/configure.ac new/gcc/configure.ac
+--- orig/gcc/configure.ac	2012-09-12 02:23:27.000000000 +0200
++++ new/gcc/configure.ac	2012-12-04 23:01:33.000000000 +0100
+@@ -790,6 +790,11 @@ AC_ARG_WITH(multilib-list,
+ :,
+ with_multilib_list=default)
+ 
++AC_ARG_WITH(extra-multilibs,
++[  --with-extra-multilibs    Select extra multilibs (ARM only)],
++:,
++with_extra_multilibs=default)
++
+ # -------------------------
+ # Checks for other programs
+ # -------------------------
+diff -rupN orig/gcc/doc/install.texi new/gcc/doc/install.texi
+--- orig/gcc/doc/install.texi	2012-09-12 02:23:27.000000000 +0200
++++ new/gcc/doc/install.texi	2012-12-04 22:57:04.000000000 +0100
+@@ -1068,6 +1068,24 @@ only little endian SH4AL:
+ --with-multilib-list=sh4al,!mb/m4al
+ @end smallexample
+ 
++@item --with-extra-multilibs=@var{list} @itemx 
++--without-extra-multilibs Specify what extra multilibs to build besides 
++the default library set.
++Currently only implemented for arm*-*-eabi.
++
++@var{list} is a comma separated list of ARM architecture names.
++Currently the available names are thumb1, thumb2, armv6s-m, armv7-m and 
++armv7e-m.
++
++If @option{--with-extra-multilibs} or @var{list} is not given, then no 
++extra multilibs will be built.
++
++Example: to configure a compiler for arm-none-eabi with additional 
++multilib support for thumb1, thumb2 and armv6s-m:
++@smallexample
++--target=arm-none-eabi --with-extra-multilibs=thumb1,thumb2,armv6s-m
++@end smallexample
++
+ @item --with-endian=@var{endians}
+ Specify what endians to use.
+ Currently only implemented for sh*-*-*.
+diff -rupN orig/libgcc/Makefile.in new/libgcc/Makefile.in
+--- orig/libgcc/Makefile.in	2012-09-12 02:23:27.000000000 +0200
++++ new/libgcc/Makefile.in	2012-12-04 21:26:41.000000000 +0100
+@@ -411,14 +411,14 @@ endif
+ lib2-divmod-o = $(patsubst %,%$(objext),$(LIB2_DIVMOD_FUNCS))
+ $(lib2-divmod-o): %$(objext): $(gcc_srcdir)/libgcc2.c
+ 	$(gcc_compile) -DL$* -c $(gcc_srcdir)/libgcc2.c \
+-	  -fexceptions -fnon-call-exceptions $(vis_hide)
++	  -fno-exceptions -fno-non-call-exceptions $(vis_hide)
+ libgcc-objects += $(lib2-divmod-o)
+ 
+ ifeq ($(enable_shared),yes)
+ lib2-divmod-s-o = $(patsubst %,%_s$(objext),$(LIB2_DIVMOD_FUNCS))
+ $(lib2-divmod-s-o): %_s$(objext): $(gcc_srcdir)/libgcc2.c
+ 	$(gcc_s_compile) -DL$* -c $(gcc_srcdir)/libgcc2.c \
+-	  -fexceptions -fnon-call-exceptions
++	  -fno-exceptions -fno-non-call-exceptions
+ libgcc-s-objects += $(lib2-divmod-s-o)
+ endif
+ 
+@@ -706,7 +706,7 @@ endif
+ # libgcc_eh.a, only LIB2ADDEH matters.  If we do, only LIB2ADDEHSTATIC and
+ # LIB2ADDEHSHARED matter.  (Usually all three are identical.)
+ 
+-c_flags := -fexceptions
++c_flags := -fno-exceptions
+ 
+ ifeq ($(enable_shared),yes)
+ 
+@@ -728,7 +728,7 @@ endif
+ 
+ # Build LIBUNWIND.
+ 
+-c_flags := -fexceptions
++c_flags := -fno-exceptions
+ 
+ libunwind-objects += $(addsuffix $(objext),$(basename $(notdir $(LIBUNWIND))))
+ 
