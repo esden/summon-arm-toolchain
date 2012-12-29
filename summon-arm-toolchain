@@ -41,6 +41,8 @@ LIBOPENCM3_EN=1
 DEFAULT_TO_CORTEX_M3=0
 # Override automatic detection of cpus to compile on
 CPUS=
+# Static linking
+STATIC=0
 
 ##############################################################################
 # Parsing command line parameters
@@ -84,6 +86,9 @@ while [ $# -gt 0 ]; do
 		CPUS=*)
 		CPUS=$(echo $1 | sed 's,^CPUS=,,')
 		;;
+		STATIC=*)
+		STATIC=$(echo $1 | sed 's,^STATIC=,,')
+		;;
 		*)
 		echo "Unknown parameter: $1"
 		exit 1
@@ -106,6 +111,7 @@ echo "LIBSTM32_EN=$LIBSTM32_EN"
 echo "LIBOPENCM3_EN=$LIBOPENCM3_EN"
 echo "DEFAULT_TO_CORTEX_M3=$DEFAULT_TO_CORTEX_M3"
 echo "CPUS=$CPUS"
+echo "STATIC=$STATIC"
 
 ##############################################################################
 # Version and download url settings section
@@ -173,6 +179,10 @@ if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
 else
 	# To default to the Cortex-M3:
 	GCCFLAGS="--with-arch=armv7-m --with-mode=thumb --with-float=soft"
+fi
+
+if [ "${STATIC}" != 0 ]; then
+	export LDFLAGS=-static
 fi
 
 # Pull in the local configuration, if any
