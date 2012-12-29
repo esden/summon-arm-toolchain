@@ -191,7 +191,7 @@ if [ -f local.sh ]; then
 fi
 
 MAKEFLAGS=${PARALLEL}
-TARFLAGS=v
+TARFLAGS=
 
 if [ ${QUIET} != 0 ]; then
     TARFLAGS=
