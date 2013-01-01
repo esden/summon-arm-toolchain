@@ -1,8 +1,8 @@
---- gcc/config/arm/t-arm-elf.orig	2011-10-25 21:33:18.000000000 -0700
-+++ gcc/config/arm/t-arm-elf	2011-10-30 18:15:16.000000000 -0700
-@@ -31,78 +31,33 @@
- 	_arm_floatdidf _arm_floatdisf _arm_floatundidf _arm_floatundisf \
- 	_clzsi2 _clzdi2 
+--- gcc/config/arm/t-arm-elf.orig	2012-12-11 00:42:29.000000000 -0800
++++ gcc/config/arm/t-arm-elf	2012-12-31 14:43:34.000000000 -0800
+@@ -17,75 +17,30 @@
+ # along with GCC; see the file COPYING3.  If not see
+ # <http://www.gnu.org/licenses/>.
  
 +# We have to build 'arm' and 'thumb' libraries, it seems.
  MULTILIB_OPTIONS     = marm/mthumb
@@ -13,7 +13,10 @@
 -#MULTILIB_OPTIONS     += mcpu=fa526/mcpu=fa626/mcpu=fa606te/mcpu=fa626te/mcpu=fmp626/mcpu=fa726te
 -#MULTILIB_DIRNAMES    += fa526 fa626 fa606te fa626te fmp626 fa726te
 -#MULTILIB_EXCEPTIONS  += *mthumb*/*mcpu=fa526 *mthumb*/*mcpu=fa626
--
++# Only we don't actually want any ARM libraries. Or
++# vanilla thumb libraries.
++MULTILIB_EXCEPTIONS  = marm* mthumb
+ 
 -#MULTILIB_OPTIONS      += march=armv7
 -#MULTILIB_DIRNAMES     += thumb2
 -#MULTILIB_EXCEPTIONS   += march=armv7* marm/*march=armv7*
@@ -23,7 +26,10 @@
 -#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-a8
 -#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-r4
 -#MULTILIB_MATCHES      += march?armv7=mcpu?cortex-m3
--
++# Build with any one of arm7tdmi, M0, M3 or M4 support.
++MULTILIB_OPTIONS    += mcpu=arm7tdmi-s/mcpu=cortex-m0/mcpu=cortex-m3/mcpu=cortex-m4
++MULTILIB_DIRNAMES   += arm7tdmi-s cortex-m0 cortex-m3 cortex-m4
+ 
 -# Not quite true.  We can support hard-vfp calling in Thumb2, but how do we
 -# express that here?  Also, we really need architecture v5e or later
 -# (mcrr etc).
@@ -32,7 +38,11 @@
 -MULTILIB_EXCEPTIONS    += *mthumb/*mfloat-abi=hard*
 -#MULTILIB_EXCEPTIONS    += *mcpu=fa526/*mfloat-abi=hard*
 -#MULTILIB_EXCEPTIONS    += *mcpu=fa626/*mfloat-abi=hard*
--
++# These don't make any sense without thumb, because GCC likes to
++# tell you that you have to supply another commandline argument
++# rather than just setting it itself.
++MULTILIB_EXCEPTIONS += mcpu=arm7tdmi-s* mcpu=cortex-m0* mcpu=cortex-m3* mcpu=cortex-m4*
+ 
 -# MULTILIB_OPTIONS    += mcpu=ep9312
 -# MULTILIB_DIRNAMES   += ep9312
 -# MULTILIB_EXCEPTIONS += *mthumb/*mcpu=ep9312*
@@ -41,9 +51,9 @@
 -# MULTILIB_DIRNAMES    += le be
 -# MULTILIB_MATCHES     += mbig-endian=mbe mlittle-endian=mle
 -# 
--# MULTILIB_OPTIONS    += mhard-float/msoft-float
+-# MULTILIB_OPTIONS    += mfloat-abi=hard/mfloat-abi=soft
 -# MULTILIB_DIRNAMES   += fpu soft
--# MULTILIB_EXCEPTIONS += *mthumb/*mhard-float*
+-# MULTILIB_EXCEPTIONS += *mthumb/*mfloat-abi=hard*
 -# 
 -# MULTILIB_OPTIONS    += mno-thumb-interwork/mthumb-interwork
 -# MULTILIB_DIRNAMES   += normal interwork
@@ -77,19 +87,6 @@
 -# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm600
 -# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm610
 -# MULTILIB_MATCHES    += mcpu?arm7=mcpu?arm620
-+# Only we don't actually want any ARM libraries.  Or
-+# vanilla thumb libraries.
-+MULTILIB_EXCEPTIONS  = marm* mthumb
-+
-+# Build with any one of arm7tdmi, M0, M3 or M4 support.
-+MULTILIB_OPTIONS    += mcpu=arm7tdmi-s/mcpu=cortex-m0/mcpu=cortex-m3/mcpu=cortex-m4
-+MULTILIB_DIRNAMES   += arm7tdmi-s cortex-m0 cortex-m3 cortex-m4
-+
-+# These don't make any sense without thumb, because GCC likes to
-+# tell you that you have to supply another commandline argument
-+# rather than just setting it itself.
-+MULTILIB_EXCEPTIONS += mcpu=arm7tdmi-s* mcpu=cortex-m0* mcpu=cortex-m3* mcpu=cortex-m4*
-+
 +# All this just to get mfloat-abi=hard mfpu=fpv4-sp-d16 only specified for the M4
 +MULTILIB_OPTIONS    += mfloat-abi=hard mfpu=fpv4-sp-d16
 +MULTILIB_DIRNAMES   += float-abi-hard fpuv4-sp-d16
@@ -100,6 +97,3 @@
 +MULTILIB_EXCEPTIONS += *arm7tdmi-s*mfloat-abi* *arm7tdmi-s*mfpu*
 +MULTILIB_EXCEPTIONS += *cortex-m3*mfloat-abi* *cortex-m3*mfpu*
 +MULTILIB_EXCEPTIONS += *cortex-m0*mfloat-abi* *cortex-m0*mfpu*
- 
- EXTRA_MULTILIB_PARTS = crtbegin.o crtend.o crti.o crtn.o
- 

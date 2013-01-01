@@ -112,31 +112,31 @@ echo "CPUS=$CPUS"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.5.2
+	GCCVERSION=4.7.2
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 
 	# For FSF GDB:
-	GDBVERSION=7.3.1
+	GDBVERSION=7.5.1
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.6-2011.10
-	GCCVERSION=4.6-2011.10
+	GCCRELEASE=4.7-2012.12
+	GCCVERSION=4.7-2012.12
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.6/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/4.7/${GCCRELEASE}/+download/${GCC}.tar.bz2
 
 	# For Linaro GDB:
-	GDBRELEASE=7.3-2011.10
-	GDBVERSION=7.3-2011.10
+	GDBRELEASE=7.5-2012.12-1
+	GDBVERSION=7.5-2012.12-1
 	GDB=gdb-linaro-${GDBVERSION}
-	GDBURL=http://launchpad.net/gdb-linaro/7.3/${GDBRELEASE}/+download/${GDB}.tar.bz2
+	GDBURL=http://launchpad.net/gdb-linaro/7.5/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
-BINUTILS=binutils-2.21.1
-NEWLIB=newlib-1.19.0
-OOCD=openocd-0.6.0
+BINUTILS=binutils-2.23.1
+NEWLIB=newlib-2.0.0
+OOCD=openocd-0.6.1
 OOCD_GIT=
 LIBCMSIS=
 LIBCMSIS_GIT=v1.10-3
@@ -220,7 +220,7 @@ case "$(uname)" in
 	OOCD_LDFLAGS="-L/opt/mine/lib -L${DARWIN_OPT_PATH}/lib"
 	if gcc --version | grep llvm-gcc > /dev/null ; then
 		echo "Found you are using llvm gcc, switching to clang for gcc compile."
-		GCC_CC=clang
+		GCC_CC=llvm-gcc
 	fi
 	;;
 	CYGWIN*)
@@ -334,7 +334,7 @@ fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
 	if [ "x${OOCD_GIT}" == "x" ]; then
-		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.0/${OOCD}.tar.bz2
+		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.1/${OOCD}.tar.bz2
 	else
 		clone oocd ${OOCD_GIT} git://openocd.git.sourceforge.net/gitroot/openocd/openocd ./bootstrap
 	fi
@@ -386,7 +386,7 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
     log "Patching binutils to allow SVC support on cortex-m3"
     cd ${BINUTILS}
-    patch -p1 -i ../patches/patch-binutils-2.21.1-svc-cortexm3.diff
+    patch -p0 -i ../patches/patch-binutils-2.23.1-svc-cortexm3.diff
     cd ..
     cd build
     log "Configuring ${BINUTILS}"
@@ -420,7 +420,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-  patch -p1 -i ../patches/patch-gcc-gengtype-fix.diff
+        patch -p0 -i ../patches/patch-gcc-gengtype-fix.diff
 	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
 	cd ..
     fi
