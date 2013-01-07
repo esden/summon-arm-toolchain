@@ -1,7 +1,6 @@
-diff --git a/Makefile.am b/Makefile.am
-index 0d20233..00774fc 100644
---- a/Makefile.am
-+++ b/Makefile.am
+diff -Nur openocd-0.6.1.orig/Makefile.am openocd-0.6.1/Makefile.am
+--- openocd-0.6.1.orig/Makefile.am	2012-10-07 01:15:36.000000000 -0700
++++ openocd-0.6.1/Makefile.am	2013-01-06 17:23:41.000000000 -0800
 @@ -2,6 +2,8 @@
  # have all needed files, that a GNU package needs
  AUTOMAKE_OPTIONS = gnu 1.6
@@ -11,20 +10,19 @@ index 0d20233..00774fc 100644
  # make sure we pass the correct jimtcl flags to distcheck
  DISTCHECK_CONFIGURE_FLAGS = --disable-install-jim
  
-diff --git a/configure.ac b/configure.ac
-index d0386bc..7308edb 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -3,6 +3,8 @@ AC_INIT([openocd], [0.6.0-dev],
+diff -Nur openocd-0.6.1.orig/configure.ac openocd-0.6.1/configure.ac
+--- openocd-0.6.1.orig/configure.ac	2012-10-07 01:17:22.000000000 -0700
++++ openocd-0.6.1/configure.ac	2013-01-06 17:36:17.000000000 -0800
+@@ -3,6 +3,8 @@
    [OpenOCD Mailing List <openocd-devel@lists.sourceforge.net>])
  AC_CONFIG_SRCDIR([src/openocd.c])
  
 +AC_CONFIG_MACRO_DIR([m4])
 +
- m4_include(config_subdir.m4)dnl
+ m4_include([config_subdir.m4])dnl
  
  AM_INIT_AUTOMAKE([-Wall -Wno-portability dist-bzip2 dist-zip])
-@@ -18,7 +20,7 @@ AC_LANG_C
+@@ -19,7 +21,7 @@
  AC_PROG_CC
  AC_PROG_CC_C99
  AM_PROG_CC_C_O
@@ -33,11 +31,10 @@ index d0386bc..7308edb 100644
  
  dnl disable checks for C++, Fortran and GNU Java Compiler
  m4_defun([_LT_AC_LANG_CXX_CONFIG], [:])
-diff --git a/src/target/armv7m.c b/src/target/armv7m.c
-index d9e63d7..6a68942 100644
---- a/src/target/armv7m.c
-+++ b/src/target/armv7m.c
-@@ -245,16 +245,13 @@ static int armv7m_write_core_reg(struct target *target, unsigned num)
+diff -Nur openocd-0.6.1.orig/src/target/armv7m.c openocd-0.6.1/src/target/armv7m.c
+--- openocd-0.6.1.orig/src/target/armv7m.c	2012-10-07 01:15:36.000000000 -0700
++++ openocd-0.6.1/src/target/armv7m.c	2013-01-06 17:28:58.000000000 -0800
+@@ -258,16 +258,13 @@
  
  /**
   * Returns generic ARM userspace registers to GDB.
@@ -52,18 +49,16 @@ index d9e63d7..6a68942 100644
  
 -	*reg_list_size = 26;
 +	*reg_list_size = 17;
- 	*reg_list = malloc(sizeof(struct reg*) * (*reg_list_size));
+ 	*reg_list = malloc(sizeof(struct reg *) * (*reg_list_size));
  
  	/*
-@@ -264,26 +261,11 @@ int armv7m_get_gdb_reg_list(struct target *target, struct reg **reg_list[], int
+@@ -277,24 +274,9 @@
  	 *  - (obsolete) FPA status
  	 *  - CPSR
  	 */
 -	for (i = 0; i < 16; i++)
 +	for (i = 0; i < 17; i++)
- 	{
  		(*reg_list)[i] = &armv7m->core_cache->reg_list[i];
- 	}
  
 -	for (i = 16; i < 24; i++)
 -		(*reg_list)[i] = &arm_gdb_dummy_fp_reg;
@@ -75,7 +70,7 @@ index d9e63d7..6a68942 100644
 -
 -	/* ARMV7M is always in thumb mode, try to make GDB understand this
 -	 * if it does not support this arch */
--	*((char*)armv7m->arm.pc->value) |= 1;
+-	*((char *)armv7m->arm.pc->value) |= 1;
 -#else
 -	(*reg_list)[25] = &armv7m->core_cache->reg_list[ARMV7M_xPSR];
 -#endif
@@ -83,11 +78,10 @@ index d9e63d7..6a68942 100644
  	return ERROR_OK;
  }
  
-diff --git a/src/target/armv7m.h b/src/target/armv7m.h
-index ca92146..c26915e 100644
---- a/src/target/armv7m.h
-+++ b/src/target/armv7m.h
-@@ -30,7 +30,7 @@
+diff -Nur openocd-0.6.1.orig/src/target/armv7m.h openocd-0.6.1/src/target/armv7m.h
+--- openocd-0.6.1.orig/src/target/armv7m.h	2012-10-07 01:15:36.000000000 -0700
++++ openocd-0.6.1/src/target/armv7m.h	2013-01-06 17:23:41.000000000 -0800
+@@ -31,7 +31,7 @@
  #include "arm.h"
  
  /* define for enabling armv7 gdb workarounds */

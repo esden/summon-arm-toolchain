@@ -494,10 +494,10 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/${OOCD}.build ]; then
     unpack ${OOCD}
-    #log "Patching openocd to support arm7m registers"
-    #cd ${OOCD}
-    #patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
-    #cd ..
+    log "Patching openocd to support arm7m registers"
+    cd ${OOCD}
+    patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
+    cd ..
     cd build
     log "Configuring openocd-${OOCD}"
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
@@ -516,7 +516,8 @@ if [ ! -e ${STAMPS}/${OOCD}.build ]; then
 				 --enable-jlink \
 				 --enable-vsllink \
 				 --enable-rlink \
-				 --enable-arm-jtag-ew
+				 --enable-arm-jtag-ew \
+				 --enable-stlink
     log "Building ${OOCD}"
     make ${MAKEFLAGS}
     install ${OOCD} install
