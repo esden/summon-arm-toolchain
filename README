@@ -81,10 +81,10 @@ LIBSTM32_EN=
 By default set to 0. To enable compilation of the non-free libstm32 library
 set to 1.
 
-LIBOPENSTM32_EN=
+LIBOPENCM3_EN=
 ----------------
 
-By default set to 1. To disable compilation of the open source libopenstm32
+By default set to 1. To disable compilation of the open source libopencm3
 library set to 0.
 
 DEFAULT_TO_CORTEX_M3=
