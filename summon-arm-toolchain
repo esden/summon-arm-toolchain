@@ -44,7 +44,7 @@ CPUS=
 
 # FTP options ... some environments do not support non-passive FTP
 # FETCH_NO_PASSIVE="--no-passive-ftp "
-FETCH_NO_CERTCEHCK="--no-check-certificate "
+FETCH_NO_CERTCHECK="--no-check-certificate "
 
 ##############################################################################
 # Parsing command line parameters
