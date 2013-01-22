@@ -169,6 +169,12 @@ You can list available combinations by running:
 
   $ arm-none-eabi-gcc -print-multi-lib
 
+Known Bugs:
+===========
+- linaro gcc compilation exits without an apparent error
+  Sometimes the compilation of GCC exits without any error, RERUNNING the sat
+  script manages to compile a working gcc though.
+
 Stable tarball downloads and GIT cloning
 ========================================
 
