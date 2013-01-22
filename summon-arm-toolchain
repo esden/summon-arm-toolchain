@@ -126,8 +126,8 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.7-2012.12
-	GCCVERSION=4.7-2012.12
+	GCCRELEASE=4.7-2013.01
+	GCCVERSION=4.7-2013.01
 	GCC=gcc-linaro-${GCCVERSION}
 	GCCURL=http://launchpad.net/gcc-linaro/4.7/${GCCRELEASE}/+download/${GCC}.tar.bz2
 
