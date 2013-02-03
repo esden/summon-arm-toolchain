@@ -6,7 +6,7 @@ WITH GLIBC OR THE LINUX KERNEL. DO NOT EVEN BOTHER TO ASK FOR THAT!
 Contact
 =======
 You can find developers and users of this script on freenode IRC network in
-#summon-arm-toolchain channel. Feel free to join us and ask questions.
+\#summon-arm-toolchain channel. Feel free to join us and ask questions.
 
 Remember if you have a question it may take some time untill someone answers so
 ask your question and wait for a while untill someone sees your message. 10min
