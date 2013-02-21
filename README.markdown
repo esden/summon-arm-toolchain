@@ -6,7 +6,7 @@ WITH GLIBC OR THE LINUX KERNEL. DO NOT EVEN BOTHER TO ASK FOR THAT!
 Contact
 =======
 You can find developers and users of this script on freenode IRC network in
-#summon-arm-toolchain channel. Feel free to join us and ask questions.
+\#summon-arm-toolchain channel. Feel free to join us and ask questions.
 
 Remember if you have a question it may take some time untill someone answers so
 ask your question and wait for a while untill someone sees your message. 10min
@@ -17,11 +17,11 @@ http://webchat.freenode.net/?channels=summon-arm-toolchain&uio=d4
 
 To compile the ARM toolchain for barebone ARM devices:
 ======================================================
-* git clone https://github.com/esden/summon-arm-toolchain.git
+* `git clone https://github.com/esden/summon-arm-toolchain.git`
  or
-* wget https://github.com/esden/summon-arm-toolchain/zipball/master; unzip master
-* cd *summon-arm-toolchain*
-* ./summon-arm-toolchain
+* `wget https://github.com/esden/summon-arm-toolchain/zipball/master; unzip master`
+* `cd summon-arm-toolchain`
+* `./summon-arm-toolchain`
 * Profit
 
 Command line options
@@ -40,7 +40,7 @@ PREFIX=
 By default the installation prefix is "$(HOME)/sat" you can change it to "/usr" then the binaries will be installed into "/usr/bin" and the toolchain specific
 files in "/usr/arm-none-eabi" assuming you did not change the TARGET variable.
 
-DARWIN_OPT_PATH=
+DARWIN\_OPT\_PATH=
 ----------------
 
 When compiling on Mac OS X the build script has to know where MacPorts or Fink
@@ -63,31 +63,31 @@ QUIET=
 By default set to 0. To decrease console output (may increase compile speed
 in some cases) you can set this variable to 1.
 
-USE_LINARO=
+USE\_LINARO=
 -----------
 
 By default set to 1. To disable the usage of the Linaro GCC and use of the
 vanilla GCC instead set to 0.
 
-OOCD_EN=
+OOCD\_EN=
 --------
 
 By default set to 1. To disable compilation of OpenOCD JTAG programming
 software set to 0.
 
-LIBSTM32_EN=
+LIBSTM32\_EN=
 ------------
 
 By default set to 0. To enable compilation of the non-free libstm32 library
 set to 1.
 
-LIBOPENCM3_EN=
+LIBOPENCM3\_EN=
 ----------------
 
 By default set to 1. To disable compilation of the open source libopencm3
 library set to 0.
 
-DEFAULT_TO_CORTEX_M3=
+DEFAULT\_TO\_CORTEX\_M3=
 ---------------------
 
 By default set to 0. To enable compilation of binutils and GCC to generate code
@@ -105,7 +105,7 @@ the script.
 Example:
 --------
 
-  $ ./summon-arm-toolchain LIBSTM32_EN=1 CPUS=5
+    $ ./summon-arm-toolchain LIBSTM32_EN=1 CPUS=5
 
 This will run the script with libstm32 enabled and with 5 CPUs on your host
 machine resulting in calling all make commands with -j6.
@@ -128,8 +128,7 @@ For Mac OS X there are a few dependencies which must be installed. The wget
 and libftdi packages are required and gmp, mpfr, mpc and libiconv are needed
 by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts or fink.
 
-  $ port install gmp mpfr libmpc wget libftdi git-core py27-yaml python_select
-
+    $ port install gmp mpfr libmpc wget libftdi git-core py27-yaml python_select
 
 
 For XML support in gdb you may want to install expat too. And add the 
@@ -139,13 +138,13 @@ Notes for Linux users:
 ====================== 
 You need to install several packages. On Debian just run:
 
-  $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-    libmpc-dev autoconf texinfo build-essential libftdi-dev zlib1g-dev \
-    git zlib1g-dev python-yaml
+    $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
+      libmpc-dev autoconf texinfo build-essential libftdi-dev zlib1g-dev \
+      git zlib1g-dev python-yaml
 
 You may want to try running the following command instead too:
 
-  $ apt-get build-dep gcc-4.5 git zlib1g-dev python-yaml
+    $ apt-get build-dep gcc-4.5 git zlib1g-dev python-yaml
 
 For XML support in gdb you may want to install libexpat1 and libexpat1-dev too. 
 
@@ -167,7 +166,7 @@ just drop us a line and we will add that combination to the multilibs.
 
 You can list available combinations by running:
 
-  $ arm-none-eabi-gcc -print-multi-lib
+    $ arm-none-eabi-gcc -print-multi-lib
 
 Known Bugs:
 ===========
@@ -180,7 +179,7 @@ Stable tarball downloads and GIT cloning
 
 The script has a section containing version numbers of the respective packages.
 Some packages have beside the stable release version number also a variable
-with the suffix _GIT. If that variable is set to either a branch name or a
+with the suffix \_GIT. If that variable is set to either a branch name or a
 revision SHA the script will try to clone the repository and checkout the
 respective branch or SHA instead of downloading the stable version.
 
@@ -198,18 +197,18 @@ First of all any way of submission is appreciated, if you just want to dump
 your version of the script to us feel free to do so. Still if you want your
 improvements and fixes to go upstream quicker there is a good way to do that.
 
-1) Create an account on GitHub (or some other git hosting service, if you
-   really have to).
-2) Fork the main SAR repository.
-3) Clone the forked repository to your disk.
-4) Change the script, try to make small changes adding one feature or bugfix at
-   a time (that makes review much easier for us).
-5) Push your changes to GitHub, or the other service you chose.
-6) Test your changes, by compiling the toolchain (you probably want to do that
-   with different options).
-7) Make sure that everything still works.
-8) Test a little bit more.
-9) Click on "pull request" on GitHub or drop us a line so that we can pull your
+1. Create an account on GitHub (or some other git hosting service, if you
+  really have to).
+2. Fork the main SAR repository.
+3. Clone the forked repository to your disk.
+4. Change the script, try to make small changes adding one feature or bugfix at
+  a time (that makes review much easier for us).
+5. Push your changes to GitHub, or the other service you chose.
+6. Test your changes, by compiling the toolchain (you probably want to do that
+  with different options).
+7. Make sure that everything still works.
+8. Test a little bit more.
+9. Click on "pull request" on GitHub or drop us a line so that we can pull your
    changes.
 
 I know that sounds like a lot of work, but if you don't we have to do it and
