@@ -105,7 +105,7 @@ the script.
 Example:
 --------
 
-`$ ./summon-arm-toolchain LIBSTM32_EN=1 CPUS=5`
+    $ ./summon-arm-toolchain LIBSTM32_EN=1 CPUS=5
 
 This will run the script with libstm32 enabled and with 5 CPUs on your host
 machine resulting in calling all make commands with -j6.
@@ -128,7 +128,7 @@ For Mac OS X there are a few dependencies which must be installed. The wget
 and libftdi packages are required and gmp, mpfr, mpc and libiconv are needed
 by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts or fink.
 
-`$ port install gmp mpfr libmpc wget libftdi git-core py27-yaml python_select`
+    $ port install gmp mpfr libmpc wget libftdi git-core py27-yaml python_select
 
 
 For XML support in gdb you may want to install expat too. And add the 
@@ -166,7 +166,7 @@ just drop us a line and we will add that combination to the multilibs.
 
 You can list available combinations by running:
 
-  $ arm-none-eabi-gcc -print-multi-lib
+    $ arm-none-eabi-gcc -print-multi-lib
 
 Known Bugs:
 ===========
