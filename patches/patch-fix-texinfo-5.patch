@@ -1,0 +1,12 @@
+--- gcc/Makefile.in.orig	2013-02-25 16:01:24.156624260 +0100
++++ gcc/Makefile.in	2013-02-25 16:02:10.273290463 +0100
+@@ -4303,8 +4303,7 @@
+ 
+ doc/%.info: %.texi
+ 	if [ x$(BUILD_INFO) = xinfo ]; then \
+-		$(MAKEINFO) $(MAKEINFOFLAGS) -I . -I $(gcc_docdir) \
+-			-I $(gcc_docdir)/include -o $@ $<; \
++		touch $@; \
+ 	fi
+ 
+ # Duplicate entry to handle renaming of gccinstall.info
