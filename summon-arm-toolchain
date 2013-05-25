@@ -46,7 +46,7 @@ STATIC=0
 
 # FTP options ... some environments do not support non-passive FTP
 # FETCH_NO_PASSIVE="--no-passive-ftp "
-FETCH_NO_CERTCEHCK="--no-check-certificate "
+FETCH_NO_CERTCHECK="--no-check-certificate "
 
 ##############################################################################
 # Parsing command line parameters
@@ -132,8 +132,8 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.7-2012.12
-	GCCVERSION=4.7-2012.12
+	GCCRELEASE=4.7-2013.01
+	GCCVERSION=4.7-2013.01
 	GCC=gcc-linaro-${GCCVERSION}
 	GCCURL=http://launchpad.net/gcc-linaro/4.7/${GCCRELEASE}/+download/${GCC}.tar.bz2
 
@@ -149,7 +149,7 @@ NEWLIB=newlib-2.0.0
 OOCD=openocd-0.6.1
 OOCD_GIT=
 LIBCMSIS=
-LIBCMSIS_GIT=v1.10-3
+LIBCMSIS_GIT=v1.10-4
 LIBSTM32=
 LIBSTM32_GIT=v3.0.0-2
 LIBSTM32USB=

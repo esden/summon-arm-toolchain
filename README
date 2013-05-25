@@ -1,3 +1,13 @@
+PUBLIC ANNOUNCEMENT!
+====================
+THERE IS A BETTER REPLACEMENT FOR THIS!
+
+Since not so long ago there is a very good toolchain available that replaces summon-arm-toolchain. Is better tested and there are more people working on it.
+
+Consider visiting:
+
+https://launchpad.net/gcc-arm-embedded
+
 REMEMBER!
 =========
 THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE. NOT FOR USE
@@ -81,10 +91,10 @@ LIBSTM32_EN=
 By default set to 0. To enable compilation of the non-free libstm32 library
 set to 1.
 
-LIBOPENSTM32_EN=
+LIBOPENCM3_EN=
 ----------------
 
-By default set to 1. To disable compilation of the open source libopenstm32
+By default set to 1. To disable compilation of the open source libopencm3
 library set to 0.
 
 DEFAULT_TO_CORTEX_M3=
@@ -168,6 +178,12 @@ just drop us a line and we will add that combination to the multilibs.
 You can list available combinations by running:
 
   $ arm-none-eabi-gcc -print-multi-lib
+
+Known Bugs:
+===========
+- linaro gcc compilation exits without an apparent error
+  Sometimes the compilation of GCC exits without any error, RERUNNING the sat
+  script manages to compile a working gcc though.
 
 Stable tarball downloads and GIT cloning
 ========================================
