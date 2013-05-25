@@ -132,16 +132,14 @@ if [ ${USE_LINARO} == 0 ] ; then
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
 	# For Linaro GCC:
-	GCCRELEASE=4.7-2013.01
-	GCCVERSION=4.7-2013.01
+	GCCVERSION=4.8-2013.05
 	GCC=gcc-linaro-${GCCVERSION}
-	GCCURL=http://launchpad.net/gcc-linaro/4.7/${GCCRELEASE}/+download/${GCC}.tar.bz2
+	GCCURL=http://launchpad.net/gcc-linaro/4.8/${GCCVERSION}/+download/${GCC}.tar.bz2
 
 	# For Linaro GDB:
-	GDBRELEASE=7.5-2012.12-1
-	GDBVERSION=7.5-2012.12-1
+	GDBVERSION=7.6-2013.05
 	GDB=gdb-linaro-${GDBVERSION}
-	GDBURL=http://launchpad.net/gdb-linaro/7.5/${GDBRELEASE}/+download/${GDB}.tar.bz2
+	GDBURL=http://launchpad.net/gdb-linaro/7.6/${GDBVERSION}/+download/${GDB}.tar.bz2
 fi
 
 BINUTILS=binutils-2.23.1
@@ -436,8 +434,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+        cp ../patches/t-arm-elf .
 	cd ..
     fi
 

@@ -1,0 +1,29 @@
+ MULTILIB_OPTIONS     = marm/mthumb
+ MULTILIB_DIRNAMES    = arm thumb
+
+# Only we don't actually want any ARM libraries. Or
+# vanilla thumb libraries.
+MULTILIB_EXCEPTIONS  = marm* mthumb
+
+# Build with any one of arm7tdmi, M0, M3 or M4 support.
+MULTILIB_OPTIONS    += mcpu=arm7tdmi-s/mcpu=cortex-m0/mcpu=cortex-m3/mcpu=cortex-m4
+MULTILIB_DIRNAMES   += arm7tdmi-s cortex-m0 cortex-m3 cortex-m4
+
+# These don't make any sense without thumb, because GCC likes to
+# tell you that you have to supply another commandline argument
+# rather than just setting it itself.
+MULTILIB_EXCEPTIONS += mcpu=arm7tdmi-s* mcpu=cortex-m0* mcpu=cortex-m3* mcpu=cortex-m4*
+
+# All this just to get mfloat-abi=hard mfpu=fpv4-sp-d16 only specified for the M4
+MULTILIB_OPTIONS    += mfloat-abi=hard mfpu=fpv4-sp-d16
+MULTILIB_DIRNAMES   += float-abi-hard fpuv4-sp-d16
+MULTILIB_EXCEPTIONS += mfloat* mthumb/mfloat*
+MULTILIB_EXCEPTIONS += mfpu* mthumb/mfpu*
+MULTILIB_EXCEPTIONS += mthumb/mcpu=cortex-m4/mfloat-abi=hard
+MULTILIB_EXCEPTIONS += mthumb/mcpu=cortex-m4/mfpu=fpv4-sp-d16
+MULTILIB_EXCEPTIONS += *arm7tdmi-s*mfloat-abi* *arm7tdmi-s*mfpu*
+MULTILIB_EXCEPTIONS += *cortex-m3*mfloat-abi* *cortex-m3*mfpu*
+MULTILIB_EXCEPTIONS += *cortex-m0*mfloat-abi* *cortex-m0*mfpu*
+
+# Unrelated, but easy to patch here as well
+LIB2_DIVMOD_EXCEPTION_FLAGS := -fno-exceptions -fnon-call-exceptions
