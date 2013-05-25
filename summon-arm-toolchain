@@ -6,7 +6,7 @@
 # Requirements (example is for Debian, replace package names as needed):
 #
 # apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
-# libmpc-dev autoconf texinfo build-essential
+# libmpc-dev autoconf texinfo build-essential libftdi-dev zlib1g-dev git
 #
 # Or on Ubuntu Maverick give `apt-get build-dep gcc-4.5` a try.
 #
@@ -43,6 +43,10 @@ DEFAULT_TO_CORTEX_M3=0
 CPUS=
 # Static linking
 STATIC=0
+
+# FTP options ... some environments do not support non-passive FTP
+# FETCH_NO_PASSIVE="--no-passive-ftp "
+FETCH_NO_CERTCEHCK="--no-check-certificate "
 
 ##############################################################################
 # Parsing command line parameters
@@ -118,12 +122,12 @@ echo "STATIC=$STATIC"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.5.2
+	GCCVERSION=4.7.2
 	GCC=gcc-${GCCVERSION}
 	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
 
 	# For FSF GDB:
-	GDBVERSION=7.3.1
+	GDBVERSION=7.5.1
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
@@ -142,7 +146,7 @@ fi
 
 BINUTILS=binutils-2.23.1
 NEWLIB=newlib-2.0.0
-OOCD=openocd-0.6.0-rc1
+OOCD=openocd-0.6.1
 OOCD_GIT=
 LIBCMSIS=
 LIBCMSIS_GIT=v1.10-3
@@ -230,7 +234,7 @@ case "$(uname)" in
 	OOCD_LDFLAGS="-L/opt/mine/lib -L${DARWIN_OPT_PATH}/lib"
 	if gcc --version | grep llvm-gcc > /dev/null ; then
 		echo "Found you are using llvm gcc, switching to clang for gcc compile."
-		GCC_CC=clang
+		GCC_CC=llvm-gcc
 	fi
 	;;
 	CYGWIN*)
@@ -250,8 +254,10 @@ esac
 # Fetch a versioned file from a URL
 function fetch {
     if [ ! -e ${STAMPS}/$1.fetch ]; then
-        log "Downloading $1 sources..."
-        wget -c --no-check-certificate $2 && touch ${STAMPS}/$1.fetch
+        if [ ! -e ${SOURCES}/$1 ]; then
+            log "Downloading $1 sources..."
+	    wget -c ${FETCH_NO_PASSIVE} ${FETCH_NO_CERTCHECK} $2 && touch ${STAMPS}/$1.fetch
+        fi
     fi
 }
 
@@ -345,7 +351,7 @@ fetch ${GDB} ${GDBURL}
 
 if [ ${OOCD_EN} != 0 ]; then
 	if [ "x${OOCD_GIT}" == "x" ]; then
-		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.0-rc1/${OOCD}.tar.bz2
+		fetch ${OOCD} http://sourceforge.net/projects/openocd/files/openocd/0.6.1/${OOCD}.tar.bz2
 	else
 		clone oocd ${OOCD_GIT} git://openocd.git.sourceforge.net/gitroot/openocd/openocd ./bootstrap
 	fi
@@ -396,9 +402,9 @@ fi
 if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
     log "Patching binutils to allow SVC support on cortex-m3"
-    # cd ${BINUTILS}
-    # patch -p1 -i ../patches/patch-binutils-2.21.1-svc-cortexm3.diff
-    # cd ..
+    cd ${BINUTILS}
+    patch -p0 -i ../patches/patch-binutils-2.23.1-svc-cortexm3.diff
+    cd ..
     cd build
     log "Configuring ${BINUTILS}"
     ../${BINUTILS}/configure --target=${TARGET} \
@@ -499,10 +505,10 @@ fi
 if [ ${OOCD_EN} != 0 ]; then
 if [ ! -e ${STAMPS}/${OOCD}.build ]; then
     unpack ${OOCD}
-    #log "Patching openocd to support arm7m registers"
-    #cd ${OOCD}
-    #patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
-    #cd ..
+    log "Patching openocd to support arm7m registers"
+    cd ${OOCD}
+    patch -p1 -i ../patches/patch-openocd-arm7m-registers.diff
+    cd ..
     cd build
     log "Configuring openocd-${OOCD}"
     CFLAGS="${CFLAGS} ${OOCD_CFLAGS}" \
@@ -521,7 +527,8 @@ if [ ! -e ${STAMPS}/${OOCD}.build ]; then
 				 --enable-jlink \
 				 --enable-vsllink \
 				 --enable-rlink \
-				 --enable-arm-jtag-ew
+				 --enable-arm-jtag-ew \
+				 --enable-stlink
     log "Building ${OOCD}"
     make ${MAKEFLAGS}
     install ${OOCD} install
@@ -575,8 +582,8 @@ if [ ! -e ${STAMPS}/${LIBOPENCM3}.build ]; then
     unpack ${LIBOPENCM3}
     cd ${LIBOPENCM3}
     log "Building ${LIBOPENCM3}"
-    make PREFIX=${TARGET} DESTDIR=${PREFIX}
-    install ${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${PREFIX} install
+    make PREFIX=${TARGET} DESTDIR=${DESTDIR}${DESTDIR:+/}${PREFIX}
+    install ${LIBOPENCM3} PREFIX=${TARGET} DESTDIR=${DESTDIR}${DESTDIR:+/}${PREFIX} install
     cd ..
     log "Cleaning up ${LIBOPENCM3}"
     touch ${STAMPS}/${LIBOPENCM3}.build

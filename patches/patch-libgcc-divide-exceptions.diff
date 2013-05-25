@@ -1,5 +1,5 @@
---- libgcc/Makefile.in.orig	2012-12-11 09:42:29.000000000 +0100
-+++ libgcc/Makefile.in	2012-12-29 21:04:48.426699137 +0100
+--- libgcc/Makefile.in.orig	2012-12-31 15:19:32.000000000 -0800
++++ libgcc/Makefile.in	2012-12-31 15:19:43.000000000 -0800
 @@ -500,14 +500,14 @@
  lib2-divmod-o = $(patsubst %,%$(objext),$(LIB2_DIVMOD_FUNCS))
  $(lib2-divmod-o): %$(objext): $(srcdir)/libgcc2.c
@@ -7,7 +7,7 @@
 -	  -fexceptions -fnon-call-exceptions $(vis_hide)
 +	  -fno-exceptions -fnon-call-exceptions $(vis_hide)
  libgcc-objects += $(lib2-divmod-o)
- 
+
  ifeq ($(enable_shared),yes)
  lib2-divmod-s-o = $(patsubst %,%_s$(objext),$(LIB2_DIVMOD_FUNCS))
  $(lib2-divmod-s-o): %_s$(objext): $(srcdir)/libgcc2.c
@@ -16,13 +16,12 @@
 +	  -fno-exceptions -fnon-call-exceptions
  libgcc-s-objects += $(lib2-divmod-s-o)
  endif
- 
+
 @@ -814,7 +814,7 @@
  # libgcc_eh.a, only LIB2ADDEH matters.  If we do, only LIB2ADDEHSTATIC and
  # LIB2ADDEHSHARED matter.  (Usually all three are identical.)
- 
+
 -c_flags := -fexceptions
 +c_flags := -fno-exceptions
- 
+
  ifeq ($(enable_shared),yes)
- 
