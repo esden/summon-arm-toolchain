@@ -142,11 +142,11 @@ by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts or fink.
 
 
 
-For XML support in gdb you may want to install expat too. And add the 
+For XML support in gdb you may want to install expat too. And add the
 --with-expat parameter to the GDB target.
 
 Notes for Linux users:
-====================== 
+======================
 You need to install several packages. On Debian just run:
 
   $ apt-get install flex bison libgmp3-dev libmpfr-dev libncurses5-dev \
@@ -157,7 +157,11 @@ You may want to try running the following command instead too:
 
   $ apt-get build-dep gcc-4.5 git zlib1g-dev python-yaml
 
-For XML support in gdb you may want to install libexpat1 and libexpat1-dev too. 
+For XML support in gdb you may want to install libexpat1 and libexpat1-dev too.
+
+To build a static 32-bit version on a 64-bit system, use
+
+  $ env CC="cc -m32" CXX="c++ -m32" linux32 ./summon-arm-toolchain STATIC=1
 
 Usage notes:
 ============
@@ -226,4 +230,3 @@ I know that sounds like a lot of work, but if you don't we have to do it and
 that means that your awesome improvement or bugfix will take longer to be
 integrated into the official script. And as you, we want everyone to profit
 from such changes sooner then later. :)
-
