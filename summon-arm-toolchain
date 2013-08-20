@@ -454,6 +454,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
                       --prefix=${PREFIX} \
                       --enable-multilib \
                       --enable-languages="c,c++" \
+                      --enable-fixed-point \
                       --with-newlib \
                       --with-gnu-as \
                       --with-gnu-ld \
