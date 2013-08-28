@@ -1,13 +1,3 @@
-PUBLIC ANNOUNCEMENT!
-====================
-THERE IS A BETTER REPLACEMENT FOR THIS!
-
-Since not so long ago there is a very good toolchain available that replaces summon-arm-toolchain. Is better tested and there are more people working on it.
-
-Consider visiting:
-
-https://launchpad.net/gcc-arm-embedded
-
 REMEMBER!
 =========
 THE RESULTING TOOLCHAIN IS FOR BARE BONE ARM PROCESSOR SOFTWARE. NOT FOR USE
