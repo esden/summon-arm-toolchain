@@ -184,7 +184,8 @@ else
 fi
 
 if [ "${STATIC}" != 0 ]; then
-	export LDFLAGS=-static
+	export LDFLAGS="$LDFLAGS -static"
+	BINUTIL_LDFLAGS="$LDFLAGS -all-static"
 fi
 
 # Pull in the local configuration, if any
@@ -418,7 +419,9 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
                              --disable-werror \
                              ${BINUTILFLAGS}
     log "Building ${BINUTILS}"
-    make ${MAKEFLAGS}
+    # From <https://sourceware.org/ml/binutils/2011-08/msg00163.html>
+    make ${MAKEFLAGS} configure-host
+    make ${MAKEFLAGS} LDFLAGS="$BINUTIL_LDFLAGS"
     install ${BINUTILS} install
     cd ..
     log "Cleaning up ${BINUTILS}"
