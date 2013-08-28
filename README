@@ -5,21 +5,12 @@ WITH GLIBC OR THE LINUX KERNEL. DO NOT EVEN BOTHER TO ASK FOR THAT!
 
 Contact
 =======
-You can find developers and users of this script on freenode IRC network in
-#summon-arm-toolchain channel. Feel free to join us and ask questions.
 
-Remember if you have a question it may take some time untill someone answers so
-ask your question and wait for a while untill someone sees your message. 10min
-is not long enough. :)
-
-If you don't have an irc client installed you can use the web interface here:
-http://webchat.freenode.net/?channels=summon-arm-toolchain&uio=d4
+This is fork is still maintained, primarily for the use with the MC HCK, <http://mchck.org>.  You should nevertheless be able to use it for other bare ARM platforms.
 
 To compile the ARM toolchain for barebone ARM devices:
 ======================================================
-* git clone https://github.com/esden/summon-arm-toolchain.git
- or
-* wget https://github.com/esden/summon-arm-toolchain/zipball/master; unzip master
+* git clone https://github.com/mchck/summon-arm-toolchain.git
 * cd *summon-arm-toolchain*
 * ./summon-arm-toolchain
 * Profit
