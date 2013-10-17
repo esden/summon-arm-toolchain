@@ -1,11 +1,11 @@
 PUBLIC ANNOUNCEMENT!
 ====================
 
-THIS PROJECT IS NOT UNDER ACTIVE DEVELOPMENT ANY MORE.
+THERE IS A REPLACEMENT FOR THIS!
 
-THERE IS A BETTER REPLACEMENT FOR THIS!
-
-Since not so long ago there is a very good toolchain available that replaces summon-arm-toolchain. Is better tested and there are more people working on it.
+Since not so long ago there is a very good toolchain available that
+replaces summon-arm-toolchain. Is better tested and there are more people
+working on it.
 
 Consider visiting:
 
@@ -32,7 +32,8 @@ To compile the ARM toolchain for barebone ARM devices:
 ======================================================
 * git clone https://github.com/esden/summon-arm-toolchain.git
  or
-* wget https://github.com/esden/summon-arm-toolchain/zipball/master; unzip master
+* wget https://github.com/esden/summon-arm-toolchain/zipball/master
+* unzip master
 * cd *summon-arm-toolchain*
 * ./summon-arm-toolchain
 * Profit
@@ -45,42 +46,46 @@ You can suffix the script call with the following variable parameters:
 TARGET=
 -------
 
-By default the target is arm-none-eabi, you may want to use a different target, for example arm-elf. Use that option on your own risk it may brake things.
+By default the target is arm-none-eabi, you may want to use a different
+target, for example arm-elf. Use that option on your own risk it may
+brake things.
 
 PREFIX=
 -------
 
-By default the installation prefix is "$(HOME)/sat" you can change it to "/usr" then the binaries will be installed into "/usr/bin" and the toolchain specific
-files in "/usr/arm-none-eabi" assuming you did not change the TARGET variable.
+By default the installation prefix is "$(HOME)/sat" you can change it
+to "/usr" then the binaries will be installed into "/usr/bin" and the
+toolchain specific files in "/usr/arm-none-eabi" assuming you did not
+change the TARGET variable.
 
 DARWIN_OPT_PATH=
 ----------------
 
-When compiling on Mac OS X the build script has to know where MacPorts or Fink
-is installed. The default value is "/opt/local".
+When compiling on Mac OS X the build script has to know where MacPorts
+or Fink is installed. The default value is "/opt/local".
 
 SUDO=
 -----
 
-By default this variable is empty. If you need root rights for the install
-step you may set this variable to "sudo".
+By default this variable is empty. If you need root rights for the
+install step you may set this variable to "sudo".
 
   $ ./summon-arm-toolchain SUDO=sudo
 
-This will prefix all make install steps with the sudo command asking for
-your root password.
+This will prefix all make install steps with the sudo command asking
+for your root password.
 
 QUIET=
 ------
 
-By default set to 0. To decrease console output (may increase compile speed
-in some cases) you can set this variable to 1.
+By default set to 0. To decrease console output (may increase compile
+speed in some cases) you can set this variable to 1.
 
 USE_LINARO=
 -----------
 
-By default set to 1. To disable the usage of the Linaro GCC and use of the
-vanilla GCC instead set to 0.
+By default set to 1. To disable the usage of the Linaro GCC and use of
+the vanilla GCC instead set to 0.
 
 OOCD_EN=
 --------
@@ -91,8 +96,8 @@ software set to 0.
 LIBSTM32_EN=
 ------------
 
-By default set to 0. To enable compilation of the non-free libstm32 library
-set to 1.
+By default set to 0. To enable compilation of the non-free libstm32
+library set to 1.
 
 LIBOPENCM3_EN=
 ----------------
@@ -103,10 +108,11 @@ library set to 0.
 DEFAULT_TO_CORTEX_M3=
 ---------------------
 
-By default set to 0. To enable compilation of binutils and GCC to generate code
-for the Cortex-M3 ARM architecture by default set to 1. Tests have shown that
-using these options is not very reliable and is discouraged. It is more
-reliable to add the necessary options to your build environment instead.
+By default set to 0. To enable compilation of binutils and GCC to
+generate code for the Cortex-M3 ARM architecture by default set to
+1. Tests have shown that using these options is not very reliable and
+is discouraged. It is more reliable to add the necessary options to your
+build environment instead.
 
 CPUS=
 -----
@@ -137,9 +143,10 @@ Currently tested and known to work host platforms:
 Notes for Mac OS X users:
 =========================
 
-For Mac OS X there are a few dependencies which must be installed. The wget
-and libftdi packages are required and gmp, mpfr, mpc and libiconv are needed
-by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts or fink.
+For Mac OS X there are a few dependencies which must be installed. The
+wget and libftdi packages are required and gmp, mpfr, mpc and libiconv are
+needed by GCC-4.5.1. These can be installed using MacPorts, DarwinPorts
+or fink.
 
   $ port install gmp mpfr libmpc wget libftdi git-core py27-yaml python_select
 
@@ -165,10 +172,10 @@ For XML support in gdb you may want to install libexpat1 and libexpat1-dev too.
 Usage notes:
 ============
 
-We support multilib now in SAT thanks to Eric Parsonage's and Bernard
-Davison's amazing work. You want to use the following GCC flag combinations to
-generate full fledged floating point supporting code for some selected
-architectures (default is to use software floating point).
+We support multilib now in SAT thanks to Eric Parsonage's and
+Bernard Davison's amazing work. You want to use the following GCC flag
+combinations to generate full fledged floating point supporting code for
+some selected architectures (default is to use software floating point).
 
 * ARM7TDMI-S targets: -mthumb -mcpu=arm7tdmi-s
 * Cortex-M0 targets: -mthumb -mcpu=cortex-m0
@@ -185,17 +192,18 @@ You can list available combinations by running:
 Known Bugs:
 ===========
 - linaro gcc compilation exits without an apparent error
-  Sometimes the compilation of GCC exits without any error, RERUNNING the sat
-  script manages to compile a working gcc though.
+  Sometimes the compilation of GCC exits without any error, RERUNNING
+  the sat script manages to compile a working gcc though.
 
 Stable tarball downloads and GIT cloning
 ========================================
 
-The script has a section containing version numbers of the respective packages.
-Some packages have beside the stable release version number also a variable
-with the suffix _GIT. If that variable is set to either a branch name or a
-revision SHA the script will try to clone the repository and checkout the
-respective branch or SHA instead of downloading the stable version.
+The script has a section containing version numbers of the respective
+packages.  Some packages have beside the stable release version number
+also a variable with the suffix _GIT. If that variable is set to either
+a branch name or a revision SHA the script will try to clone the repository
+and checkout the respective branch or SHA instead of downloading the
+stable version.
 
 If you provide a GIT branch name the script will contact the GIT server and
 query the associated SHA. If this SHA is already present in the sources
@@ -207,26 +215,26 @@ How to submit improvements and patches
 As more and more people start to submit patches and improvements to
 Summon-Arm-Toolchain (SAR) this section seems to become necessary.
 
-First of all any way of submission is appreciated, if you just want to dump
-your version of the script to us feel free to do so. Still if you want your
-improvements and fixes to go upstream quicker there is a good way to do that.
+First of all any way of submission is appreciated, if you just want to
+dump your version of the script to us feel free to do so. Still if you
+want your improvements and fixes to go upstream quicker there is a good
+way to do that.
 
 1) Create an account on GitHub (or some other git hosting service, if you
    really have to).
 2) Fork the main SAR repository.
 3) Clone the forked repository to your disk.
-4) Change the script, try to make small changes adding one feature or bugfix at
-   a time (that makes review much easier for us).
+4) Change the script, try to make small changes adding one feature or
+   bugfix at a time (that makes review much easier for us).
 5) Push your changes to GitHub, or the other service you chose.
-6) Test your changes, by compiling the toolchain (you probably want to do that
-   with different options).
+6) Test your changes, by compiling the toolchain (you probably want to
+   do that with different options).
 7) Make sure that everything still works.
 8) Test a little bit more.
-9) Click on "pull request" on GitHub or drop us a line so that we can pull your
-   changes.
+9) Click on "pull request" on GitHub or drop us a line so that we can
+   pull your changes.
 
-I know that sounds like a lot of work, but if you don't we have to do it and
-that means that your awesome improvement or bugfix will take longer to be
-integrated into the official script. And as you, we want everyone to profit
-from such changes sooner then later. :)
-
+I know that sounds like a lot of work, but if you don't we have to do it
+and that means that your awesome improvement or bugfix will take longer
+to be integrated into the official script. And as you, we want everyone
+to profit from such changes sooner then later. :)

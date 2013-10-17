@@ -27,18 +27,18 @@ SUDO=
 # Set to 1 to be quieter while running
 QUIET=0
 # Set to 1 to use linaro gcc instead of the FSF gcc
-USE_LINARO=1
+USE_LINARO=0
 # Set to 1 to enable building of OpenOCD
-OOCD_EN=1
+OOCD_EN=0
 # Set to 'master' or a git revision number to use instead of stable version
 OOCD_GIT=
 # Set to 1 to build libstm32 provided by ST
 LIBSTM32_EN=0
 # Set to 1 to build libopencm3 an open source library for Cortex M3 and simalar
 # chips
-LIBOPENCM3_EN=1
+LIBOPENCM3_EN=0
 # Make the gcc default to Cortex-M3
-DEFAULT_TO_CORTEX_M3=0
+DEFAULT_TO_CORTEX_M3=1
 # Override automatic detection of cpus to compile on
 CPUS=
 
@@ -116,12 +116,13 @@ echo "CPUS=$CPUS"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.7.2
+	GCCVERSION=4.8.2
 	GCC=gcc-${GCCVERSION}
-	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
+	#GCCURL=http://ftp.sh.cvut.cz/gnu/gcc/${GCC}/${GCC}.tar.gz
 
 	# For FSF GDB:
-	GDBVERSION=7.5.1
+	GDBVERSION=7.6.1
 	GDB=gdb-${GDBVERSION}
 	GDBURL=http://ftp.gnu.org/gnu/gdb/${GDB}.tar.bz2
 else
@@ -138,7 +139,7 @@ else
 	GDBURL=http://launchpad.net/gdb-linaro/7.5/${GDBRELEASE}/+download/${GDB}.tar.bz2
 fi
 
-BINUTILS=binutils-2.23.1
+BINUTILS=binutils-2.23.52.0.2
 NEWLIB=newlib-2.0.0
 OOCD=openocd-0.6.1
 OOCD_GIT=
@@ -333,7 +334,8 @@ mkdir -p ${STAMPS} ${SOURCES}
 
 cd ${SOURCES}
 
-fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
+#fetch ${BINUTILS} http://ftp.gnu.org/gnu/binutils/${BINUTILS}.tar.bz2
+fetch ${BINUTILS} https://www.kernel.org/pub/linux/devel/binutils/${BINUTILS}.tar.bz2
 fetch ${GCC} ${GCCURL}
 fetch ${NEWLIB} ftp://sourceware.org/pub/newlib/${NEWLIB}.tar.gz
 fetch ${GDB} ${GDBURL}
@@ -392,7 +394,7 @@ if [ ! -e ${STAMPS}/${BINUTILS}.build ]; then
     unpack ${BINUTILS}
     log "Patching binutils to allow SVC support on cortex-m3"
     cd ${BINUTILS}
-    patch -p0 -i ../patches/patch-binutils-2.23.1-svc-cortexm3.diff
+    #patch -p0 -i ../patches/patch-binutils-2.23.1-svc-cortexm3.diff
     cd ..
     cd build
     log "Configuring ${BINUTILS}"
@@ -425,8 +427,8 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
     if [ ${DEFAULT_TO_CORTEX_M3} == 0 ] ; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
-	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+	#patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
+	#patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
 	cd ..
     fi
 
