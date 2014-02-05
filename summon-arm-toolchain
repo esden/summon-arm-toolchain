@@ -116,9 +116,9 @@ echo "CPUS=$CPUS"
 ##############################################################################
 if [ ${USE_LINARO} == 0 ] ; then
 	# For FSF GCC:
-	GCCVERSION=4.7.2
+	GCCVERSION=4.8.0
 	GCC=gcc-${GCCVERSION}
-	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.gz
+	GCCURL=http://ftp.gnu.org/gnu/gcc/${GCC}/${GCC}.tar.bz2
 
 	# For FSF GDB:
 	GDBVERSION=7.5.1
@@ -426,7 +426,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 	log "Patching gcc to add multilib support"
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
-	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+	patch -p0 -i ../patches/patch-${GCC}-libgcc-divide-exceptions.diff
 	cd ..
     fi
 
