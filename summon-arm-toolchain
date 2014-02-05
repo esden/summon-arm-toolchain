@@ -427,6 +427,7 @@ if [ ! -e ${STAMPS}/${GCC}-${NEWLIB}.build ]; then
 	cd ${GCC}
 	patch -p0 -i ../patches/patch-gcc-config-arm-t-arm-elf.diff
 	patch -p0 -i ../patches/patch-libgcc-divide-exceptions.diff
+	patch -p0 -i ../patches/patch-fix-texinfo-5.patch
 	cd ..
     fi
 
