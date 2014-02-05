@@ -303,7 +303,11 @@ function log {
 function unpack {
     log Unpacking $*
     # Use 'auto' mode decompression.  Replace with a switch if tar doesn't support -a
-    ARCHIVE=$(ls ${SOURCES}/$1.tar.*)
+	if [ -e $1 ]; then
+		log Already Uncompressed
+		return
+	fi
+	ARCHIVE=$(ls ${SOURCES}/$1.tar.*)
     case ${ARCHIVE} in
 	*.bz2)
 	    echo "archive type bz2"
